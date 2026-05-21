@@ -1,0 +1,26 @@
+{
+  "name": "goalbet",
+  "version": "1.0.0",
+  "description": "> Decentralized prediction markets · AI betting agent · Bet Receipt NFTs   > Built for the **X Cup Hackathon 2026** (May 19–28)",
+  "main": "deploy.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run deploy.js --network localhost",
+    "deploy:testnet": "hardhat run deploy.js --network xlayerTestnet",
+    "deploy:mainnet": "hardhat run deploy.js --network xlayer",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "dotenv": "^17.4.2",
+    "hardhat": "^2.28.6"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.6"
+  }
+}

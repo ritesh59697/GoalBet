@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GoalBet - Bet Placement Modal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed": "#ffe16d",
+                      "on-tertiary-container": "#5f4f00",
+                      "on-primary": "#003642",
+                      "on-error": "#690005",
+                      "on-surface": "#e5e2e1",
+                      "inverse-primary": "#00677e",
+                      "on-error-container": "#ffdad6",
+                      "border-stroke": "rgba(255, 255, 255, 0.1)",
+                      "error-container": "#93000a",
+                      "win-gold-glow": "rgba(255, 215, 0, 0.2)",
+                      "on-tertiary-fixed": "#221b00",
+                      "secondary-container": "#6800e4",
+                      "surface-variant": "#353534",
+                      "outline-variant": "#3c494e",
+                      "surface-container-low": "#1c1b1b",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-secondary": "#3e008e",
+                      "tertiary-fixed-dim": "#e9c400",
+                      "on-primary-fixed": "#001f27",
+                      "on-tertiary-fixed-variant": "#544600",
+                      "secondary-fixed": "#eaddff",
+                      "secondary-fixed-dim": "#d2bbff",
+                      "on-primary-fixed-variant": "#004e5f",
+                      "tertiary-container": "#e4c000",
+                      "secondary": "#d2bbff",
+                      "surface-tint": "#3cd7ff",
+                      "inverse-on-surface": "#313030",
+                      "error": "#ffb4ab",
+                      "surface-container": "#201f1f",
+                      "on-surface-variant": "#bbc9cf",
+                      "primary-container": "#00d4ff",
+                      "surface-container-highest": "#353534",
+                      "tertiary": "#ffdd4c",
+                      "on-secondary-container": "#d2bbff",
+                      "surface": "#131313",
+                      "on-secondary-fixed": "#25005a",
+                      "background": "#131313",
+                      "background-deep": "#050505",
+                      "surface-dim": "#131313",
+                      "outline": "#859398",
+                      "on-background": "#e5e2e1",
+                      "surface-bright": "#3a3939",
+                      "inverse-surface": "#e5e2e1",
+                      "surface-container-high": "#2a2a2a",
+                      "primary-fixed-dim": "#3cd7ff",
+                      "primary-fixed": "#b4ebff",
+                      "surface-glass": "rgba(255, 255, 255, 0.03)",
+                      "on-secondary-fixed-variant": "#5900c6",
+                      "on-tertiary": "#3a3000",
+                      "neon-purple-glow": "rgba(123, 47, 247, 0.4)",
+                      "primary": "#a8e8ff",
+                      "on-primary-container": "#00586b",
+                      "neon-cyan-glow": "rgba(0, 212, 255, 0.4)"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "48px",
+                      "base": "8px",
+                      "container-max": "1440px",
+                      "sm": "12px",
+                      "md": "24px",
+                      "xs": "4px",
+                      "xl": "80px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "DM Serif Display"
+                      ],
+                      "headline-xl": [
+                              "DM Serif Display"
+                      ],
+                      "display-lg": [
+                              "DM Serif Display"
+                      ],
+                      "headline-lg-mobile": [
+                              "DM Serif Display"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "64px",
+                              {
+                                      "lineHeight": "72px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #050505; /* background-deep */
+            color: #e5e2e1; /* on-background */
+        }
+        
+        .modal-overlay {
+            background: radial-gradient(circle at top left, rgba(0, 212, 255, 0.1), transparent 50%),
+                        radial-gradient(circle at bottom right, rgba(123, 47, 247, 0.1), transparent 50%),
+                        rgba(5, 5, 5, 0.85); /* background-deep with opacity */
+            backdrop-filter: blur(24px);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03); /* surface-glass */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* border-stroke */
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .glass-panel::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            pointer-events: none;
+        }
+
+        .btn-primary-neon {
+            background-color: #00d4ff; /* primary-container */
+            color: #00586b; /* on-primary-container */
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-neon:hover {
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); /* neon-cyan-glow */
+            transform: translateY(-2px);
+        }
+
+        .chip-selector {
+            background: #1c1b1b; /* surface-container-low */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .chip-selector:hover, .chip-selector.active {
+            border-color: #00d4ff; /* primary-container */
+            color: #a8e8ff; /* primary */
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: transparent;
+            box-shadow: 0 0 0 1px #00d4ff, inset 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #a8e8ff, #d2bbff); /* primary to secondary */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Particles container for aesthetic */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased min-h-screen flex items-center justify-center relative overflow-hidden">
+<!-- Top Navigation (Contextual) -->
+<nav class="fixed top-0 w-full z-50 bg-surface-glass backdrop-blur-xl border-b border-stroke shadow-neon-cyan-glow">
+<div class="flex justify-between items-center px-lg py-sm max-w-container-max mx-auto w-full">
+<div class="flex items-center gap-md">
+<a class="font-headline-lg text-headline-lg text-primary tracking-tight" href="#">GoalBet</a>
+<div class="hidden md:flex gap-md ml-lg">
+<a class="text-on-surface-variant font-label-caps hover:text-primary-container transition-colors duration-300" href="#">Markets</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-label-caps hover:text-primary-container transition-colors duration-300" href="#">Live</a>
+<a class="text-on-surface-variant font-label-caps hover:text-primary-container transition-colors duration-300" href="#">Leaderboard</a>
+<a class="text-on-surface-variant font-label-caps hover:text-primary-container transition-colors duration-300" href="#">Airdrop</a>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface hover:text-primary transition-colors duration-300 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface hover:text-primary transition-colors duration-300 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<button class="ml-sm px-md py-sm bg-surface-container border border-stroke rounded text-on-surface font-label-caps hover:border-primary hover:text-primary transition-all duration-300">
+                    Connect Wallet
+                </button>
+</div>
+</div>
+</nav>
+<!-- Background Particle Effect Placeholder -->
+<div class="pointer-events-none" data-alt="A dark, abstract background depicting floating, blurred spherical shapes resembling digital soccer balls and glowing data nodes. The scene is illuminated by ethereal neon cyan and purple rim lighting, creating a deep, cinematic stadium atmosphere at night. The texture feels like frosted glass overlays on top of a high-tech sports interface, deeply immersed in a cyber-luxury aesthetic." id="particles-js" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAcVp2MMgUUf-KInT1lheGfOQbU9j1wyc68047E8Y4-IW02srFMvjqL5lrHXsDYBryG4wGXRRAJ2Ecp3qiKadP-st2SiORPza2ge5NUxhNXiix18feKHx1xPr31BXPHFVSuqazd36AWyq_R0NoXwpoi2jo5cwn8ayLiGOf7OFtuxSMFoQD1Tu_xi3lLgw2DXRyCMeCsRcm3whQuI3lRyNHucakhX1-9tHLWvAHwLGVyJiuLbEsjh7ztH1EIlCA9TgZMvOc3ruI'); background-size: cover; background-position: center;"></div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 modal-overlay z-40 flex items-center justify-center p-md sm:p-lg">
+<!-- Modal Container -->
+<div class="glass-panel relative w-full max-w-md rounded-xl overflow-hidden backdrop-blur-xl animate-[fadeIn_0.3s_ease-out]">
+<!-- Close Button -->
+<button class="absolute top-sm right-sm text-on-surface-variant hover:text-primary transition-colors z-10 p-xs rounded-full hover:bg-surface-glass">
+<span class="material-symbols-outlined">close</span>
+</button>
+<!-- Header: Match Info -->
+<div class="p-lg pb-md text-center border-b border-stroke relative">
+<div class="absolute inset-0 bg-gradient-to-b from-[rgba(0,212,255,0.05)] to-transparent pointer-events-none"></div>
+<div class="font-label-caps text-label-caps text-on-surface-variant mb-xs uppercase tracking-widest">Live Match • Group Stage</div>
+<div class="font-headline-lg text-headline-lg text-on-surface flex items-center justify-center gap-sm">
+<span>Brazil</span>
+<span class="text-surface-variant text-body-sm font-body-sm mx-xs">VS</span>
+<span>France</span>
+</div>
+</div>
+<!-- Body: Bet Details -->
+<div class="p-lg space-y-md">
+<!-- Selected Outcome -->
+<div class="bg-surface-container-low border border-stroke rounded-lg p-md text-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(0,212,255,0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="font-body-md text-body-md text-on-surface-variant mb-xs">Selected Outcome</div>
+<div class="font-headline-xl text-headline-xl gradient-text tracking-tight mb-xs">Brazil Win</div>
+<div class="font-data-mono text-data-mono text-primary flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                        2.40x
+                    </div>
+</div>
+<!-- Wager Input -->
+<div class="space-y-sm">
+<div class="flex justify-between items-center font-label-caps text-label-caps text-on-surface-variant">
+<span>Wager Amount (USDT)</span>
+<span>Bal: 1,450.00</span>
+</div>
+<div class="relative">
+<span class="absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant font-data-mono">₮</span>
+<input class="w-full bg-background-deep border border-stroke rounded-lg py-sm pl-xl pr-md font-data-mono text-data-mono text-on-surface custom-input transition-all" placeholder="0.00" type="number" value="100"/>
+<button class="absolute right-sm top-1/2 -translate-y-1/2 text-xs font-label-caps text-primary px-sm py-xs bg-surface-glass rounded hover:bg-surface-container transition-colors">MAX</button>
+</div>
+<!-- Quick Select Chips -->
+<div class="flex gap-sm mt-sm">
+<button class="flex-1 py-xs chip-selector rounded font-data-mono text-data-mono text-on-surface-variant">10</button>
+<button class="flex-1 py-xs chip-selector rounded font-data-mono text-data-mono text-on-surface-variant">50</button>
+<button class="flex-1 py-xs chip-selector active rounded font-data-mono text-data-mono text-primary">100</button>
+<button class="flex-1 py-xs chip-selector rounded font-data-mono text-data-mono text-on-surface-variant">500</button>
+</div>
+</div>
+<!-- Payout Breakdown -->
+<div class="bg-surface-container-lowest rounded-lg p-md space-y-sm border border-stroke">
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Potential Return</span>
+<span class="font-data-mono text-on-surface">240.00 USDT</span>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Network Fee (2%)</span>
+<span class="font-data-mono text-on-surface">-2.00 USDT</span>
+</div>
+<div class="h-px w-full bg-stroke my-xs"></div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface font-semibold">To Win</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight">238.00 <span class="text-body-sm font-body-sm text-on-surface-variant ml-xs">USDT</span></span>
+</div>
+</div>
+</div>
+<!-- Footer: Action -->
+<div class="p-lg pt-0">
+<button class="w-full btn-primary-neon rounded-lg py-md font-label-caps text-label-caps uppercase tracking-widest flex items-center justify-center gap-sm">
+                    Confirm Bet &amp; Mint Receipt NFT
+                    <span class="material-symbols-outlined text-sm">receipt_long</span>
+</button>
+<div class="text-center mt-sm font-body-sm text-body-sm text-on-surface-variant opacity-70">
+                    Secured by Ethereum Smart Contract
+                </div>
+</div>
+</div>
+</div>
+<!-- Simple script for interactivity demonstration -->
+<script>
+        document.querySelectorAll('.chip-selector').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.chip-selector').forEach(c => {
+                    c.classList.remove('active', 'text-primary');
+                    c.classList.add('text-on-surface-variant');
+                });
+                this.classList.add('active', 'text-primary');
+                this.classList.remove('text-on-surface-variant');
+                
+                const input = document.querySelector('input[type="number"]');
+                input.value = this.innerText;
+                
+                // Simulate calculation update
+                const val = parseFloat(this.innerText);
+                const returnVal = val * 2.4;
+                const fee = val * 0.02;
+                const toWin = returnVal - fee;
+                
+                document.querySelectorAll('.bg-surface-container-lowest span.font-data-mono')[0].innerText = returnVal.toFixed(2) + ' USDT';
+                document.querySelectorAll('.bg-surface-container-lowest span.font-data-mono')[1].innerText = '-' + fee.toFixed(2) + ' USDT';
+                document.querySelector('.text-headline-lg-mobile').innerHTML = toWin.toFixed(2) + ' <span class="text-body-sm font-body-sm text-on-surface-variant ml-xs">USDT</span>';
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,708 @@
+/* GoalBet — Enhanced Premium Global Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --primary:       #00d4ff;
+  --primary-dim:   #3cd7ff;
+  --purple:        #7b2ff7;
+  --green:         #4ade80;
+  --red:           #f87171;
+  --gold:          #fbbf24;
+  --bg:            #020203; /* Deep, luxury pitch black */
+  --bg-card:       rgba(6, 6, 9, 0.52); /* High-end dark glassmorphism */
+  --bg-card-hover: rgba(10, 10, 15, 0.68);
+  --border:        rgba(255, 255, 255, 0.035); /* Laser-thin borders */
+  --border-bright: rgba(255, 255, 255, 0.08);
+  --text-primary:  #f3f6f9;
+  --text-secondary:#94a3b8; /* Refined slate */
+  --text-muted:    #475569;
+  --radius:        16px;
+  --radius-sm:     12px;
+  --radius-xs:     8px;
+
+  /* Theme variables for TeamAvatar, MatchCard, BetModal and Toasts */
+  --avatar-border-grad: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
+  --avatar-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --avatar-inner-bg: rgba(4, 4, 6, 0.8);
+  --card-header-bg: rgba(255, 255, 255, 0.01);
+  --vs-badge-bg: rgba(0, 212, 255, 0.06);
+  --vs-badge-border: rgba(0, 212, 255, 0.22);
+  --vs-badge-shadow: 0 0 8px rgba(0, 212, 255, 0.25);
+  --dot-draw: rgba(255, 255, 255, 0.4);
+  --primary-alpha-border: rgba(0, 212, 255, 0.4);
+  --primary-alpha-bg: rgba(0, 212, 255, 0.08);
+  --red-alpha-border: rgba(248, 113, 113, 0.4);
+  --red-alpha-bg: rgba(248, 113, 113, 0.08);
+  --btn-amount-bg: rgba(0, 212, 255, 0.08);
+  --purple-alpha-bg: rgba(123, 47, 247, 0.08);
+  --purple-alpha-border: rgba(123, 47, 247, 0.3);
+  --success-bg: rgba(74, 222, 128, 0.04);
+  --success-border: rgba(74, 222, 128, 0.15);
+  --success-text: #4ade80;
+  --danger-bg: rgba(248, 113, 113, 0.07);
+  --danger-border: rgba(248, 113, 113, 0.2);
+  --danger-text: #f87171;
+  --toast-success-bg: rgba(10, 28, 12, 0.97);
+  --toast-success-border: rgba(74, 222, 128, 0.3);
+  --toast-error-bg: rgba(28, 10, 10, 0.97);
+  --toast-error-border: rgba(248, 113, 113, 0.3);
+  --toast-info-bg: rgba(8, 18, 30, 0.97);
+  --toast-info-border: rgba(0, 212, 255, 0.3);
+  --toast-shadow: rgba(0, 0, 0, 0.5);
+  --hero-bg: rgba(255, 255, 255, 0.005);
+
+  /* Text Gradients */
+  --logo-grad: linear-gradient(135deg, #ffffff 0%, rgba(0, 212, 255, 0.85) 100%);
+  --hero-grad: linear-gradient(135deg, #00d4ff 0%, #a78bfa 100%);
+  --hero-glow: drop-shadow(0 0 30px rgba(0, 212, 255, 0.15));
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Subtle stadium / digital soccer background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAcVp2MMgUUf-KInT1lheGfOQbU9j1wyc68047E8Y4-IW02srFMvjqL5lrHXsDYBryG4wGXRRAJ2Ecp3qiKadP-st2SiORPza2ge5NUxhNXiix18feKHx1xPr31BXPHFVSuqazd36AWyq_R0NoXwpoi2jo5cwn8ayLiGOf7OFtuxSMFoQD1Tu_xi3lLgw2DXRyCMeCsRcm3whQuI3lRyNHucakhX1-9tHLWvAHwLGVyJiuLbEsjh7ztH1EIlCA9TgZMvOc3ruI');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.035; /* Extremely subtle, professional, integrated atmosphere */
+  filter: saturate(0.8) contrast(1.2) blur(1px);
+}
+
+/* Base gradients overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse 70% 40% at 50% -10%, rgba(0,212,255,0.08), transparent),
+    radial-gradient(ellipse 50% 50% at 90% 50%, rgba(123,47,247,0.05), transparent),
+    radial-gradient(ellipse 40% 40% at 10% 80%, rgba(0,212,255,0.03), transparent);
+}
+
+/* ── Typography Utilities ── */
+.font-headline { font-family: 'DM Serif Display', Georgia, serif; }
+.font-sans { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ── Text Gradients ── */
+.text-gradient-logo {
+  background: var(--logo-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.text-gradient-hero {
+  background: var(--hero-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: var(--hero-glow);
+}
+
+.text-gradient-primary-purple {
+  background: linear-gradient(135deg, var(--primary), var(--purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* ── Animated grid background ── */
+.grid-bg {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  opacity: 0.85;
+}
+
+/* ── Glass Card ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 1px solid rgba(255, 255, 255, 0.12); /* Subtle top metallic rim light */
+  border-radius: var(--radius);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.85), 0 0 1px rgba(255, 255, 255, 0.05);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 60%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+.card:hover {
+  border-color: rgba(0, 212, 255, 0.22);
+  border-top-color: rgba(0, 212, 255, 0.45);
+  box-shadow: 
+    0 30px 64px -15px rgba(0,0,0,0.92), 
+    0 0 20px rgba(0, 212, 255, 0.06), 
+    0 0 1px rgba(0, 212, 255, 0.25);
+  transform: translateY(-3px);
+}
+
+/* ── Shimmer Button (Magic UI style) ── */
+.btn-shimmer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0,212,255,0.22);
+  background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(123,47,247,0.08));
+  color: var(--primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+.btn-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  animation: shimmer 2.8s infinite;
+}
+.btn-shimmer:hover {
+  border-color: rgba(0,212,255,0.55);
+  box-shadow: 0 0 20px rgba(0,212,255,0.2), 0 4px 12px rgba(0,0,0,0.3);
+  transform: translateY(-1px);
+}
+.btn-shimmer:active { transform: translateY(0) scale(0.98); }
+
+/* ── Gradient Border Card ── */
+.card-gradient-border {
+  position: relative;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(123,47,247,0.04));
+}
+.card-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: calc(var(--radius) + 1px);
+  background: linear-gradient(135deg, rgba(0,212,255,0.4), rgba(123,47,247,0.4), rgba(0,212,255,0.08));
+  z-index: -1;
+  opacity: 0.6;
+  animation: border-spin 4s linear infinite;
+}
+
+/* ── Primary Action Button ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: linear-gradient(135deg, #00d4ff 0%, #00a3d4 50%, #7b2ff7 100%);
+  color: #001217;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 750;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(0,212,255,0.25);
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.22), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary:hover { box-shadow: 0 0 28px rgba(0,212,255,0.45), 0 6px 20px rgba(0,0,0,0.5); transform: translateY(-1.5px); }
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ── Subtle Ghost Button ── */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { border-color: rgba(0,212,255,0.25); color: var(--primary); background: rgba(0,212,255,0.05); }
+
+/* ── Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.badge-live  { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
+.badge-open  { background: rgba(0,212,255,0.08);   color: #00d4ff; border: 1px solid rgba(0,212,255,0.18); }
+.badge-done  { background: rgba(74,222,128,0.08);  color: #4ade80; border: 1px solid rgba(74,222,128,0.18); }
+.badge-agent { background: rgba(123,47,247,0.1); color: #a78bfa; border: 1px solid rgba(123,47,247,0.25); }
+
+/* ── Stat Card ── */
+.stat-card {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  text-align: center;
+}
+.stat-card .stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 0%, rgba(0,212,255,0.85) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+/* ── Progress / Pool Bar ── */
+.pool-bar-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 99px;
+  overflow: hidden;
+  display: flex;
+}
+.pool-bar-home { background: linear-gradient(90deg, #00d4ff, #7b2ff7); transition: width 0.6s ease; }
+.pool-bar-draw { background: rgba(255,255,255,0.12); transition: width 0.6s ease; }
+.pool-bar-away { background: linear-gradient(90deg, #9e36ff, #f87171); transition: width 0.6s ease; }
+
+/* ── Odds Button ── */
+.odds-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.012);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 3px;
+}
+.odds-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+.odds-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.odds-btn .odds-label { font-size: 9px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; }
+.odds-btn .odds-value { font-size: 19px; font-weight: 800; font-family: 'JetBrains Mono', monospace; letter-spacing: -0.03em; }
+
+/* Home Win Button Styles */
+.odds-btn-home .odds-value {
+  color: #00d4ff;
+  text-shadow: 0 0 12px rgba(0, 212, 255, 0.25);
+}
+.odds-btn-home:hover:not(:disabled) {
+  border-color: rgba(0, 212, 255, 0.35);
+  border-top-color: rgba(0, 212, 255, 0.55);
+  background: rgba(0, 212, 255, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.12), inset 0 1px 0 rgba(0, 212, 255, 0.08);
+}
+
+/* Draw Button Styles */
+.odds-btn-draw .odds-value {
+  color: var(--text-secondary);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+}
+.odds-btn-draw:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Away Win Button Styles */
+.odds-btn-away .odds-value {
+  color: #f87171;
+  text-shadow: 0 0 12px rgba(248, 113, 113, 0.25);
+}
+.odds-btn-away:hover:not(:disabled) {
+  border-color: rgba(248, 113, 113, 0.35);
+  border-top-color: rgba(248, 113, 113, 0.55);
+  background: rgba(248, 113, 113, 0.06);
+  box-shadow: 0 8px 24px rgba(248, 113, 113, 0.12), inset 0 1px 0 rgba(248, 113, 113, 0.08);
+}
+
+/* ── Terminal Log ── */
+.terminal {
+  background: rgba(2, 2, 4, 0.82);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.75;
+  overflow-y: auto;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+}
+.terminal-line { animation: fadeSlideIn 0.35s ease forwards; opacity: 0; }
+@keyframes fadeSlideIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Input ── */
+.input {
+  width: 100%;
+  background: rgba(4, 4, 6, 0.72);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input:focus { border-color: rgba(0,212,255,0.45); box-shadow: 0 0 0 3px rgba(0,212,255,0.08); }
+.input::-webkit-outer-spin-button, .input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* ── Tabs ── */
+.tab-bar { display: flex; border-bottom: 1px solid var(--border); gap: 0; }
+.tab-item {
+  padding: 13px 20px;
+  font-size: 13.5px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 0.2s;
+}
+.tab-item:hover { color: var(--text-secondary); }
+.tab-item.active {
+  color: var(--primary);
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--purple));
+  border-radius: 2px 2px 0 0;
+}
+
+/* ── Nav ── */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(2, 2, 3, 0.82);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.7);
+}
+.nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px; /* Slightly taller */
+}
+
+/* ── Animations ── */
+@keyframes shimmer {
+  0%   { left: -100%; }
+  60%  { left: 100%; }
+  100% { left: 100%; }
+}
+@keyframes border-spin {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 4px rgba(248,113,113,0.7), 0 0 0 0 rgba(248,113,113,0.4); }
+  50%       { box-shadow: 0 0 8px rgba(248,113,113,0.9), 0 0 0 6px rgba(248,113,113,0); }
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes number-tick {
+  from { transform: translateY(30%); opacity: 0.3; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-fade-in { animation: fadeIn 0.3s ease; }
+.animate-slide-up { animation: slideUp 0.3s ease; }
+.animate-number { animation: number-tick 0.35s ease; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+/* ── Status ── */
+.text-win  { color: #4ade80; }
+.text-loss { color: #f87171; }
+.text-pend { color: #00d4ff; }
+
+/* ── Tooltip ── */
+.tooltip-wrap { position: relative; }
+.tooltip-wrap:hover .tooltip-box { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.tooltip-box {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(15,20,28,0.98);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 999;
+}
+
+/* ── Number Ticker (Magic UI inspired) ── */
+.number-ticker {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+/* ── Light Mode Override System ── */
+[data-theme="light"] {
+  --bg:            #f5f7fa; /* Elegant off-white / light slate */
+  --bg-card:       rgba(255, 255, 255, 0.72); /* Glassy white card background */
+  --bg-card-hover: rgba(255, 255, 255, 0.88);
+  --border:        rgba(15, 23, 42, 0.05); /* Laser-thin light borders */
+  --border-bright: rgba(15, 23, 42, 0.1);
+  --text-primary:  #0f172a; /* Deep luxury charcoal/slate */
+  --text-secondary:#475569; /* Balanced secondary slate */
+  --text-muted:    #64748b; /* Muted gray-blue */
+  
+  --primary:       #009ebd; /* A slightly deeper teal-cyan for better contrast */
+  --primary-dim:   #00b4d8;
+  --purple:        #6366f1; /* Indigo-purple for better contrast in light mode */
+  --green:         #16a34a; /* Deeper green for positive states */
+  --red:           #dc2626; /* Deeper red for negative states */
+  --gold:          #d97706; /* Deeper gold/yellow */
+
+  /* Light theme values for our variables */
+  --avatar-border-grad: linear-gradient(135deg, rgba(15, 23, 42, 0.15), transparent);
+  --avatar-shadow: 0 6px 16px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --avatar-inner-bg: rgba(255, 255, 255, 0.9);
+  --card-header-bg: rgba(15, 23, 42, 0.015);
+  --vs-badge-bg: rgba(0, 158, 189, 0.06);
+  --vs-badge-border: rgba(0, 158, 189, 0.22);
+  --vs-badge-shadow: none;
+  --dot-draw: rgba(15, 23, 42, 0.3);
+  --primary-alpha-border: rgba(0, 158, 189, 0.45);
+  --primary-alpha-bg: rgba(0, 158, 189, 0.08);
+  --red-alpha-border: rgba(220, 38, 38, 0.45);
+  --red-alpha-bg: rgba(220, 38, 38, 0.08);
+  --btn-amount-bg: rgba(0, 158, 189, 0.08);
+  --purple-alpha-bg: rgba(99, 102, 241, 0.08);
+  --purple-alpha-border: rgba(99, 102, 241, 0.35);
+  --success-bg: rgba(22, 163, 74, 0.05);
+  --success-border: rgba(22, 163, 74, 0.15);
+  --success-text: #16a34a;
+  --danger-bg: rgba(220, 38, 38, 0.05);
+  --danger-border: rgba(220, 38, 38, 0.15);
+  --danger-text: #dc2626;
+  --toast-success-bg: rgba(240, 253, 244, 0.98);
+  --toast-success-border: rgba(22, 163, 74, 0.3);
+  --toast-error-bg: rgba(254, 242, 242, 0.98);
+  --toast-error-border: rgba(220, 38, 38, 0.3);
+  --toast-info-bg: rgba(240, 249, 255, 0.98);
+  --toast-info-border: rgba(0, 158, 189, 0.3);
+  --toast-shadow: rgba(15, 23, 42, 0.08);
+  --hero-bg: rgba(15, 23, 42, 0.002);
+
+  /* Text Gradients */
+  --logo-grad: linear-gradient(135deg, #0f172a 0%, var(--primary) 100%);
+  --hero-grad: linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%);
+  --hero-glow: none;
+}
+
+/* Light mode specific background overlays */
+[data-theme="light"] body::before {
+  opacity: 0.07;
+  filter: invert(1) saturate(0.8) contrast(1.2) blur(1px);
+}
+
+[data-theme="light"] body::after {
+  background-image:
+    radial-gradient(ellipse 70% 40% at 50% -10%, rgba(0, 158, 189, 0.06), transparent),
+    radial-gradient(ellipse 50% 50% at 90% 50%, rgba(99, 102, 241, 0.03), transparent),
+    radial-gradient(ellipse 40% 40% at 10% 80%, rgba(0, 158, 189, 0.02), transparent);
+}
+
+[data-theme="light"] .grid-bg {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+}
+
+/* Light mode card borders and shadows */
+[data-theme="light"] .card {
+  border-top: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    0 20px 48px -10px rgba(15, 23, 42, 0.06), 
+    0 0 1px rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="light"] .card:hover {
+  border-color: rgba(0, 158, 189, 0.25);
+  border-top-color: rgba(0, 158, 189, 0.5);
+  box-shadow: 
+    0 30px 64px -15px rgba(15, 23, 42, 0.1), 
+    0 0 20px rgba(0, 158, 189, 0.06), 
+    0 0 1px rgba(0, 158, 189, 0.25);
+}
+
+[data-theme="light"] .btn-shimmer {
+  border: 1px solid rgba(0, 158, 189, 0.15);
+  background: linear-gradient(135deg, rgba(0, 158, 189, 0.05), rgba(99, 102, 241, 0.05));
+}
+
+[data-theme="light"] .btn-primary {
+  box-shadow: 0 4px 20px rgba(0, 158, 189, 0.2);
+}
+
+[data-theme="light"] .stat-card {
+  background: rgba(0, 0, 0, 0.012);
+}
+
+[data-theme="light"] .stat-card .stat-value {
+  background: linear-gradient(135deg, #0f172a 0%, #009ebd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .odds-btn {
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-top: 1px solid rgba(15, 23, 42, 0.03);
+  background: rgba(15, 23, 42, 0.01);
+}
+
+[data-theme="light"] .odds-btn-home .odds-value {
+  color: #009ebd;
+  text-shadow: none;
+}
+[data-theme="light"] .odds-btn-home:hover:not(:disabled) {
+  border-color: rgba(0, 158, 189, 0.35);
+  border-top-color: rgba(0, 158, 189, 0.55);
+  background: rgba(0, 158, 189, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 158, 189, 0.08), inset 0 1px 0 rgba(0, 158, 189, 0.05);
+}
+
+[data-theme="light"] .odds-btn-draw .odds-value {
+  color: #475569;
+  text-shadow: none;
+}
+[data-theme="light"] .odds-btn-draw:hover:not(:disabled) {
+  border-color: rgba(71, 85, 105, 0.35);
+  border-top-color: rgba(71, 85, 105, 0.55);
+  background: rgba(71, 85, 105, 0.06);
+  box-shadow: 0 8px 24px rgba(71, 85, 105, 0.08), inset 0 1px 0 rgba(71, 85, 105, 0.05);
+}
+
+[data-theme="light"] .odds-btn-away .odds-value {
+  color: #dc2626;
+  text-shadow: none;
+}
+[data-theme="light"] .odds-btn-away:hover:not(:disabled) {
+  border-color: rgba(220, 38, 38, 0.35);
+  border-top-color: rgba(220, 38, 38, 0.55);
+  background: rgba(220, 38, 38, 0.06);
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.08), inset 0 1px 0 rgba(220, 38, 38, 0.05);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.15);
+}
+
+[data-theme="light"] .input {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text-primary);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+}
+[data-theme="light"] .input:focus {
+  border-color: rgba(0, 158, 189, 0.45);
+  box-shadow: 0 0 0 3px rgba(0, 158, 189, 0.08);
+}
+
+[data-theme="light"] .tab-item.active {
+  text-shadow: 0 0 10px rgba(0, 158, 189, 0.15);
+}
+
