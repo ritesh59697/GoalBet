@@ -485,8 +485,8 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
     aggressive: { color: "var(--red)", bg: "var(--danger-bg)", border: "var(--danger-border)", icon: <Flame size={13} />, desc: "Min 40% confidence · Max 20% per bet" },
   };
 
-  const addLog = (text, col) => {
-    setLogs(p => [...p, { text, col }]);
+  const addLog = (text, col, txHash) => {
+    setLogs(p => [...p, { text, col, txHash }]);
     setTimeout(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, 50);
   };
 
@@ -552,7 +552,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
         if (data.actions && data.actions.length > 0) {
           data.actions.forEach(act => {
             if (act.type === "BET_PLACED") {
-              addLog(`[Bet Placed] Match ${act.matchIndex}: Outcome ${act.outcome} | Amount: $${act.amount} USDT | TX: ${act.txHash.slice(0, 12)}...`, "#4ade80");
+              addLog(`[Bet Placed] Match ${act.matchIndex}: Outcome ${act.outcome} | Amount: $${act.amount} USDT | TX: ${act.txHash.slice(0, 12)}...`, "#4ade80", act.txHash);
             } else if (act.type === "SKIPPED") {
               addLog(`[Skipped] Match ${act.matchIndex}: ${act.reasoning}`, "var(--text-muted)");
             } else if (act.type === "ERROR") {
@@ -731,9 +731,22 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
                   const el = document.getElementById("topup-amount-input");
                   const val = parseFloat(el?.value || "0");
                   if (val > 0) {
-                    const success = await topUpBudget(val);
-                    if (success) {
-                      onNotif(`Topped up agent budget by $${val} USDT!`, "success");
+                    const result = await topUpBudget(val);
+                    if (result && result.success) {
+                      onNotif(
+                        <span>
+                          Topped up agent budget by ${val} USDT!{" "}
+                          <a
+                            href={`${ACTIVE_NETWORK.explorerUrl}/tx/${result.txHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "var(--primary)", textDecoration: "underline", marginLeft: 4 }}
+                          >
+                            Verify
+                          </a>
+                        </span>,
+                        "success"
+                      );
                       if (el) el.value = "";
                       refetchUsdt();
                     } else {
@@ -804,9 +817,22 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
             <button
               className="btn-ghost"
               onClick={async () => {
-                const success = await revokeAgent();
-                if (success) {
-                  onNotif("Agent authorization revoked!", "success");
+                const result = await revokeAgent();
+                if (result && result.success) {
+                  onNotif(
+                    <span>
+                      Agent authorization revoked!{" "}
+                      <a
+                        href={`${ACTIVE_NETWORK.explorerUrl}/tx/${result.txHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "var(--primary)", textDecoration: "underline", marginLeft: 4 }}
+                      >
+                        Verify
+                      </a>
+                    </span>,
+                    "success"
+                  );
                   refetchUsdt();
                 } else {
                   onNotif("Revoke failed", "error");
@@ -830,9 +856,22 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
                 if (!address) { onNotif("Connect your wallet first!", "error"); return; }
                 const numericBudget = parseFloat(budget) || 0;
                 if (numericBudget <= 0) { onNotif("Enter a valid budget amount", "error"); return; }
-                const success = await authorizeAgent(numericBudget);
-                if (success) {
-                  onNotif(`Agent active with $${budget} USDT!`, "success");
+                const result = await authorizeAgent(numericBudget);
+                if (result && result.success) {
+                  onNotif(
+                    <span>
+                      Agent active with ${budget} USDT!{" "}
+                      <a
+                        href={`${ACTIVE_NETWORK.explorerUrl}/tx/${result.txHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "var(--primary)", textDecoration: "underline", marginLeft: 4 }}
+                      >
+                        Verify
+                      </a>
+                    </span>,
+                    "success"
+                  );
                   refetchUsdt();
                 } else {
                   onNotif("Authorization failed", "error");
@@ -922,6 +961,23 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
             <div key={i} className="terminal-line" style={{ color: l.col || "var(--text-secondary)", animationDelay: `${i * 0.04}s` }}>
               <span style={{ color: "var(--text-muted)", marginRight: 8, userSelect: "none", fontSize: 10 }}>›</span>
               {l.text}
+              {l.txHash && (
+                <a
+                  href={`${ACTIVE_NETWORK.explorerUrl}/tx/${l.txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: "var(--primary)",
+                    marginLeft: 8,
+                    textDecoration: "underline",
+                    fontSize: 10,
+                    fontWeight: 600,
+                    fontFamily: "sans-serif"
+                  }}
+                >
+                  [Verify On-Chain]
+                </a>
+              )}
             </div>
           ))}
         </div>
@@ -1035,7 +1091,20 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif }) {
                           onNotif(`Claiming $${fmt(bet.potentialPayout)} USDT…`, "info");
                           const txHash = await claimWinnings(bet.betId);
                           if (txHash) {
-                            onNotif(`Claimed successfully!`, "success");
+                            onNotif(
+                              <span>
+                                Claimed successfully!{" "}
+                                <a
+                                  href={`${ACTIVE_NETWORK.explorerUrl}/tx/${txHash}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ color: "var(--primary)", textDecoration: "underline", marginLeft: 4 }}
+                                >
+                                  Verify
+                                </a>
+                              </span>,
+                              "success"
+                            );
                             refetchBets();
                             refetchUsdt();
                           } else {
@@ -1353,7 +1422,20 @@ export default function Home() {
           signer={wallet.signer}
           theme={theme}
           onSuccess={result => {
-            notify(`Bet placed! TX: ${result.txHash.slice(0, 12)}…`, "success");
+            notify(
+              <span>
+                Bet placed!{" "}
+                <a
+                  href={`${ACTIVE_NETWORK.explorerUrl}/tx/${result.txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "var(--primary)", textDecoration: "underline", marginLeft: 4 }}
+                >
+                  Verify
+                </a>
+              </span>,
+              "success"
+            );
             refetchMatches();
             refetchUsdt();
             setModal(null);

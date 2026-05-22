@@ -75,7 +75,7 @@ export function useAgent(
       setState(s => ({ ...s, txStatus: "authorizing" }));
       const market = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, signer);
       const tx = await market.authorizeMyAgent(AGENT_WALLET, budgetWei);
-      await tx.wait();
+      const receipt = await tx.wait();
 
       setState(s => ({
         ...s,
@@ -86,7 +86,7 @@ export function useAgent(
       }));
 
       await fetchAgentState();
-      return true;
+      return { success: true, txHash: receipt.hash };
 
     } catch (err) {
       const msg = err?.reason || err?.message || "Authorization failed";
@@ -95,13 +95,13 @@ export function useAgent(
         txStatus: "error",
         error: msg.includes("user rejected") ? "Transaction cancelled" : msg,
       }));
-      return false;
+      return { success: false, error: msg };
     }
   }, [signer, fetchAgentState]);
 
   // ─── Top up agent budget ──────────────────────────────────────────────────
   const topUpBudget = useCallback(async (additionalUsdt) => {
-    if (!signer) return false;
+    if (!signer) return { success: false, error: "Wallet not connected" };
     setState(s => ({ ...s, error: null, txStatus: "approving" }));
 
     try {
@@ -118,7 +118,7 @@ export function useAgent(
       setState(s => ({ ...s, txStatus: "authorizing" }));
       const market = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, signer);
       const tx = await market.updateAgentBudget(amountWei);
-      await tx.wait();
+      const receipt = await tx.wait();
 
       setState(s => ({
         ...s,
@@ -127,22 +127,22 @@ export function useAgent(
       }));
 
       await fetchAgentState();
-      return true;
+      return { success: true, txHash: receipt.hash };
     } catch (err) {
       setState(s => ({ ...s, txStatus: "error", error: err?.message || "Top-up failed" }));
-      return false;
+      return { success: false, error: err?.message || "Top-up failed" };
     }
   }, [signer, fetchAgentState]);
 
   // ─── Revoke agent ─────────────────────────────────────────────────────────
   const revokeAgent = useCallback(async () => {
-    if (!signer) return false;
+    if (!signer) return { success: false, error: "Wallet not connected" };
     setState(s => ({ ...s, error: null, txStatus: "revoking" }));
 
     try {
       const market = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, signer);
       const tx = await market.revokeAgent();
-      await tx.wait();
+      const receipt = await tx.wait();
 
       setState(s => ({
         ...s,
@@ -151,10 +151,10 @@ export function useAgent(
         agentAddress: null,
         remainingBudget: 0,
       }));
-      return true;
+      return { success: true, txHash: receipt.hash };
     } catch (err) {
       setState(s => ({ ...s, txStatus: "error", error: err?.message || "Revoke failed" }));
-      return false;
+      return { success: false, error: err?.message || "Revoke failed" };
     }
   }, [signer]);
 
