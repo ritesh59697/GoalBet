@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { ethers } from "ethers";
-import { CONTRACTS, USDT_DECIMALS } from "../utils/config";
+import { CONTRACTS, USDT_DECIMALS, runWithRpcFallback } from "../utils/config";
 import { PREDICTION_MARKET_ABI, ERC20_ABI } from "../utils/abis";
 
 export function useBetting(signer) {
@@ -59,6 +59,18 @@ export function useBetting(signer) {
       }
 
       const result = { betId, txHash: receipt.hash };
+      
+      // Save txHash to local storage cache for instant retrieval in useUserBets
+      if (typeof window !== "undefined") {
+        try {
+          const cache = JSON.parse(localStorage.getItem("goalbet_tx_map") || "{}");
+          cache[betId] = receipt.hash;
+          localStorage.setItem("goalbet_tx_map", JSON.stringify(cache));
+        } catch (e) {
+          console.error("Failed to cache bet tx", e);
+        }
+      }
+
       setLastResult(result);
       setStatus("success");
       return result;
@@ -81,6 +93,18 @@ export function useBetting(signer) {
       const market = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, signer);
       const tx = await market.claimWinnings(betId);
       const receipt = await tx.wait();
+
+      // Save claim txHash to local storage cache for instant retrieval in useUserBets
+      if (typeof window !== "undefined") {
+        try {
+          const cache = JSON.parse(localStorage.getItem("goalbet_claim_tx_map") || "{}");
+          cache[betId] = receipt.hash;
+          localStorage.setItem("goalbet_claim_tx_map", JSON.stringify(cache));
+        } catch (e) {
+          console.error("Failed to cache claim tx", e);
+        }
+      }
+
       setStatus("success");
       return receipt.hash;
     } catch (err) {
@@ -118,15 +142,19 @@ export function useBetting(signer) {
     amountUsdt
   ) => {
     try {
-      const provider = signer?.provider || new ethers.JsonRpcProvider(
-        process.env.NEXT_PUBLIC_RPC_URL || "https://rpc.xlayer.tech",
-        undefined,
-        { batchMaxCount: 1 }
-      );
-      const market = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, provider);
-      const amountWei = ethers.parseUnits(amountUsdt.toString(), USDT_DECIMALS);
-      const payout = await market.getPotentialPayout(matchIndex, outcome, amountWei);
-      return Number(ethers.formatUnits(payout, USDT_DECIMALS));
+      if (signer?.provider) {
+        const market = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, signer.provider);
+        const amountWei = ethers.parseUnits(amountUsdt.toString(), USDT_DECIMALS);
+        const payout = await market.getPotentialPayout(matchIndex, outcome, amountWei);
+        return Number(ethers.formatUnits(payout, USDT_DECIMALS));
+      } else {
+        return await runWithRpcFallback(async (p) => {
+          const market = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, p);
+          const amountWei = ethers.parseUnits(amountUsdt.toString(), USDT_DECIMALS);
+          const payout = await market.getPotentialPayout(matchIndex, outcome, amountWei);
+          return Number(ethers.formatUnits(payout, USDT_DECIMALS));
+        });
+      }
     } catch {
       return 0;
     }

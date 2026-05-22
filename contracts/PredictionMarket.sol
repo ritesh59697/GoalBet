@@ -319,7 +319,7 @@ contract PredictionMarket is Ownable, ReentrancyGuard {
     ) {
         Match storage m = matches[matchIndex];
         uint256 total = m.totalPool;
-        if (total == 0) return (200, 300, 200); // default 2x, 3x, 2x
+        if (total == 0) return (20000, 30000, 20000); // default 2x, 3x, 2x
 
         uint256 homePool = m.outcomePools[uint256(Outcome.HOME_WIN)];
         uint256 drawPool = m.outcomePools[uint256(Outcome.DRAW)];

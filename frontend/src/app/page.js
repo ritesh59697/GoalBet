@@ -8,7 +8,7 @@ import {
   LogOut, Copy, ExternalLink, Info, Lock, Unlock, Timer, Sun, Moon
 } from "lucide-react";
 import { useWalletContext } from "./layout";
-import { ACTIVE_NETWORK, TEAM_FLAGS } from "../utils/config";
+import { ACTIVE_NETWORK, TEAM_FLAGS, CONTRACTS } from "../utils/config";
 import { useMatches } from "../hooks/useMatches";
 import { useUserBets } from "../hooks/useUserBets";
 import { useUSDT } from "../hooks/useUSDT";
@@ -27,6 +27,16 @@ function timeUntil(ms) {
   if (h > 24) return `${Math.floor(h / 24)}d ${h % 24}h`;
   if (h > 0) return `${h}h ${m}m`;
   return `${m}m`;
+}
+
+function formatTimeAgo(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000) return "Just now";
+  const m = Math.floor(diff / 60000);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
 }
 
 // ─── Team Images ─────────────────────────────────────────────────────────────
@@ -254,21 +264,34 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
     }
   }, [match.index, outcome, amount, simulatePayout, odds]);
 
+  const numAmount = parseFloat(amount) || 0;
+  
+  // Calculate potential payout with professional empty-pool fallback
+  let payout = potentialPayout;
+  if (outcome && numAmount > 0) {
+    const fallbackPayout = numAmount * (odds[outcome] || 1);
+    if (!payout || payout <= numAmount) {
+      payout = fallbackPayout;
+    }
+  }
+  const profit = payout - numAmount;
+
   useEffect(() => {
     if (status === "success" && lastResult) {
-      onSuccess(lastResult);
+      onSuccess({
+        ...lastResult,
+        amount: numAmount,
+        outcome,
+        payout
+      });
     }
-  }, [status, lastResult, onSuccess]);
+  }, [status, lastResult, onSuccess, numAmount, outcome, payout]);
 
-  const numAmount = parseFloat(amount) || 0;
   const place = async () => {
     if (!outcome) return;
     if (numAmount <= 0) return;
     await placeBet(match.index, outcome, numAmount);
   };
-
-  const payout = potentialPayout || (numAmount * (odds[outcome] || 1));
-  const profit = payout > numAmount ? payout - numAmount : 0;
 
   const homeImg = TEAM_IMAGES[match.homeTeam];
   const awayImg = TEAM_IMAGES[match.awayTeam];
@@ -360,26 +383,33 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
             </div>
 
             {/* Payout estimate */}
-            {outcome && (
-              <div style={{
-                background: "var(--success-bg)", border: "1px solid var(--success-border)",
-                borderRadius: 8, padding: "14px 16px", marginBottom: 16,
-                display: "flex", justifyContent: "space-between", alignItems: "center"
-              }}>
-                <div>
-                  <div style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Potential Payout</div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: "var(--success-text)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: -0.5 }}>
-                    ${fmt(payout)}
+            {outcome && (() => {
+              const isLoss = profit < 0;
+              const profitColor = isLoss ? "var(--danger-text)" : "var(--success-text)";
+              const profitBg = isLoss ? "var(--danger-bg)" : "var(--success-bg)";
+              const profitBorder = isLoss ? "1px solid var(--danger-border)" : "1px solid var(--success-border)";
+              const profitSign = isLoss ? "-" : "+";
+              return (
+                <div style={{
+                  background: profitBg, border: profitBorder,
+                  borderRadius: 8, padding: "14px 16px", marginBottom: 16,
+                  display: "flex", justifyContent: "space-between", alignItems: "center"
+                }}>
+                  <div>
+                    <div style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Potential Payout</div>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: profitColor, fontFamily: "'JetBrains Mono', monospace", letterSpacing: -0.5 }}>
+                      ${fmt(payout)}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 10, color: profitColor, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>{isLoss ? "Loss" : "Profit"}</div>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: profitColor, fontFamily: "'JetBrains Mono', monospace", letterSpacing: -0.5 }}>
+                      {profitSign}${fmt(Math.abs(profit))}
+                    </div>
                   </div>
                 </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Profit</div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: "var(--success-text)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: -0.5 }}>
-                    +${fmt(profit)}
-                  </div>
-                </div>
-              </div>
-            )}
+              );
+            })()}
 
             {error && (
               <div style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--danger-text)", fontSize: 13, marginBottom: 12, padding: "8px 12px", background: "var(--danger-bg)", borderRadius: 7, border: "1px solid var(--danger-border)" }}>
@@ -393,6 +423,177 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
               {status !== "approving" && status !== "betting" && <><Zap size={14} /> {outcome ? `Bet $${amount} on ${OPT_LABELS[outcome]}` : "Select an outcome"}</>}
             </ShimmerBtn>
           </>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InfoModal({ type, onClose, theme }) {
+  const MODAL_CONTENT = {
+    whitepaper: {
+      title: "GoalBet Whitepaper",
+      subtitle: "Decentralized Parimutuel Sports Betting & AI Execution",
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--text-primary)" }}>
+            GoalBet is a state-of-the-art decentralized sports betting protocol that leverages parimutuel pooling and autonomous AI execution on the <strong>X Layer</strong> blockchain.
+          </p>
+          <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginTop: 6 }}>1. Parimutuel Pooling</h4>
+          <p style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--text-secondary)" }}>
+            Unlike traditional bookmakers, all stakes for a given match outcome are pooled. Winning tickets split the total pool (minus a small fee of 2%) proportionally to their wager. The odds are calculated dynamically and finalized only when the pool locks at kickoff.
+          </p>
+          <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginTop: 6 }}>2. Autonomous AI Delegation</h4>
+          <p style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--text-secondary)" }}>
+            Users can delegate their betting activity to a localized AI Betting Agent. By authorizing the contract and depositing USDT, the agent calculates Expected Value (EV) using current pool sizes and historical team data, executing bets sizing based on the Kelly Criterion.
+          </p>
+          <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginTop: 6 }}>3. Yield & Rewards</h4>
+          <p style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--text-secondary)" }}>
+            Winnings are distributed automatically in USDT. Claims are fully decentralized and can be triggered directly via the smart contract.
+          </p>
+        </div>
+      )
+    },
+    verification: {
+      title: "On-Chain Verification",
+      subtitle: "Verify contract addresses and logs on the X Layer Explorer",
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--text-primary)" }}>
+            All transaction logic, wagers, and agent executions are executed transparently on-chain. You can verify the smart contracts directly:
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
+            <div style={{ background: "rgba(0,0,0,0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>Prediction Market Contract</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {CONTRACTS.PREDICTION_MARKET || "0x12114397DCD0A58E10ff4eeb1d55c58558849dC7"}
+                </span>
+                {CONTRACTS.PREDICTION_MARKET && (
+                  <a href={`${ACTIVE_NETWORK.explorerUrl}/address/${CONTRACTS.PREDICTION_MARKET}`} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)", display: "flex", alignItems: "center" }}>
+                    <ExternalLink size={14} />
+                  </a>
+                )}
+              </div>
+            </div>
+            <div style={{ background: "rgba(0,0,0,0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>USDT Token Contract</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--purple)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {CONTRACTS.USDT || "0x1E4a5963aBFD975d8c9021ce480b42188849D41d"}
+                </span>
+                {CONTRACTS.USDT && (
+                  <a href={`${ACTIVE_NETWORK.explorerUrl}/address/${CONTRACTS.USDT}`} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)", display: "flex", alignItems: "center" }}>
+                    <ExternalLink size={14} />
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+          <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 6, lineHeight: 1.5 }}>
+            Verification transaction links are also included with every notification message and inside the wagers list on your Portfolio page.
+          </p>
+        </div>
+      )
+    },
+    odds: {
+      title: "Odds Calculations & API",
+      subtitle: "Dynamic Parimutuel Odds Mechanism",
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--text-primary)" }}>
+            GoalBet operates on a decentralized parimutuel wagering model, meaning there are no fixed bookmaker margins. Odds are determined purely by user participation.
+          </p>
+          <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginTop: 6 }}>Dynamic Formula</h4>
+          <div style={{ background: "var(--primary-alpha-bg)", border: "1px solid var(--primary-alpha-border)", padding: "12px", borderRadius: 8, textAlign: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: "var(--primary)" }}>
+            Odds = (Total Pool * 0.98) / Outcome Pool
+          </div>
+          <p style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--text-secondary)" }}>
+            As users place bets, the pools change, and odds adjust. When a match starts, the odds freeze. Winnings are settled based on these frozen closing odds.
+          </p>
+          <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginTop: 6 }}>Oracle Resolution</h4>
+          <p style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--text-secondary)" }}>
+            Match data is fetched from decentralized sports data feeds. Oracle nodes resolve matches directly on the blockchain after final whistle verification. If a match is cancelled or postponed, all pools are fully refunded in USDT.
+          </p>
+        </div>
+      )
+    },
+    support: {
+      title: "Customer Support",
+      subtitle: "Get assistance or submit platform feedback",
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--text-primary)" }}>
+            Have questions or encountered an issue with your wagers? We are here to help.
+          </p>
+          <div style={{ background: "rgba(0,0,0,0.03)", padding: "16px", borderRadius: 10, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+              <strong>Email Support:</strong> support@goalbet.io
+            </div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+              <strong>Discord Community:</strong> discord.gg/goalbet
+            </div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", borderTop: "1px solid var(--border)", paddingTop: 10 }}>
+              Please include your wallet address, transaction hash, and match ID in any support query to expedite resolution.
+            </div>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginBottom: 8 }}>Submit Feedback</h4>
+            <input placeholder="Your email address" className="input" style={{ marginBottom: 8, fontSize: 12 }} />
+            <textarea placeholder="Describe your issue or feedback..." className="input" style={{ minHeight: 80, fontSize: 12, resize: "none", fontFamily: "sans-serif" }} />
+            <button onClick={() => alert("Feedback submitted! Thank you.")} className="btn-shimmer" style={{ width: "100%", marginTop: 8 }}>Send Message</button>
+          </div>
+        </div>
+      )
+    },
+    privacy: {
+      title: "Decentralized Privacy Policy",
+      subtitle: "Your keys, your data. No central tracking.",
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <p style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--text-primary)" }}>
+            GoalBet is committed to absolute user privacy. Our architecture contains no centralized login, database, or analytics trackers.
+          </p>
+          <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginTop: 6 }}>1. Zero Personal Data</h4>
+          <p style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--text-secondary)" }}>
+            We do not collect names, email addresses, IP addresses, or location data. Your identity is simply your public cryptographic wallet address.
+          </p>
+          <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginTop: 6 }}>2. Local Storage Only</h4>
+          <p style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--text-secondary)" }}>
+            Your UI settings, active theme selection (Light vs. Dark mode), and notification transaction histories are stored purely within your own browser's LocalStorage. No cookies are transmitted to third parties.
+          </p>
+          <h4 style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--primary)", marginTop: 6 }}>3. Smart Contract Execution</h4>
+          <p style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--text-secondary)" }}>
+            All transaction parameters are publicly accessible on the public blockchain ledger (X Layer). By using GoalBet, you acknowledge that on-chain actions are immutable.
+          </p>
+        </div>
+      )
+    }
+  };
+
+  const data = MODAL_CONTENT[type] || MODAL_CONTENT.whitepaper;
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 10000,
+      background: theme === "dark" ? "rgba(0,0,0,0.85)" : "rgba(15,23,42,0.6)", backdropFilter: "blur(12px)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 16
+    }} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="card animate-slide-up" style={{ width: "100%", maxWidth: 480, border: "1px solid var(--primary-alpha-border)", maxHeight: "90vh", overflowY: "auto" }}>
+        <div style={{ padding: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
+            <div>
+              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 4 }}>
+                {data.title}
+              </h2>
+              <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>{data.subtitle}</p>
+            </div>
+            <button onClick={onClose} className="btn-ghost" style={{ padding: "6px 8px", borderRadius: 8 }}>
+              <X size={16} />
+            </button>
+          </div>
+          <div style={{ height: 1, background: "var(--border)", marginBottom: 18 }} />
+          {data.content}
         </div>
       </div>
     </div>
@@ -442,7 +643,7 @@ function MatchesTab({ matches = [], loading, onBet }) {
 }
 
 // ─── AI Agent Tab ─────────────────────────────────────────────────────────────
-function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif, theme }) {
+function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif, addNotif, theme }) {
   const [risk, setRisk] = useState("moderate");
   const [budget, setBudget] = useState("100");
   const [analysing, setAn] = useState(false);
@@ -553,6 +754,12 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
           data.actions.forEach(act => {
             if (act.type === "BET_PLACED") {
               addLog(`[Bet Placed] Match ${act.matchIndex}: Outcome ${act.outcome} | Amount: $${act.amount} USDT | TX: ${act.txHash.slice(0, 12)}...`, "#4ade80", act.txHash);
+              const outcomeLabel = { 1: "Home Win", 2: "Draw", 3: "Away Win" }[act.outcome] || "Unknown";
+              addNotif(
+                "Agent Bet Placed",
+                `AI Betting Agent autonomously placed $${act.amount} USDT on ${outcomeLabel} for match index ${act.matchIndex}`,
+                act.txHash
+              );
             } else if (act.type === "SKIPPED") {
               addLog(`[Skipped] Match ${act.matchIndex}: ${act.reasoning}`, "var(--text-muted)");
             } else if (act.type === "ERROR") {
@@ -562,6 +769,11 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
         } else {
           addLog("[Cycle] No actions taken by agent.", "var(--text-muted)");
         }
+        addNotif(
+          "Agent Run Completed",
+          `Agent cycle completed. Placed: ${data.summary.betsPlaced}, Skipped: ${data.summary.skipped}`,
+          null
+        );
         refetchAgent();
         refetchUsdt();
         onNotif("Agent cycle execution completed successfully!", "success");
@@ -578,14 +790,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
   };
 
   return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "1fr 400px",
-      gap: 28,
-      width: "100%",
-      maxWidth: "100%",
-      alignItems: "stretch",
-    }}>
+    <div className="agent-tab-container">
 
       {/* ── Left: Config panel ── */}
       <div className="card" style={{
@@ -644,7 +849,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
               {RISK[risk].icon} {risk.charAt(0).toUpperCase() + risk.slice(1)}
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+          <div className="risk-profile-grid">
             {["conservative", "moderate", "aggressive"].map(r => {
               const cfg = RISK[r];
               const sel = risk === r;
@@ -733,6 +938,11 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
                   if (val > 0) {
                     const result = await topUpBudget(val);
                     if (result && result.success) {
+                      addNotif(
+                        "Budget Topped Up",
+                        `Added $${val} USDT to AI Betting Agent's budget`,
+                        result.txHash
+                      );
                       onNotif(
                         <span>
                           Topped up agent budget by ${val} USDT!{" "}
@@ -819,6 +1029,11 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
               onClick={async () => {
                 const result = await revokeAgent();
                 if (result && result.success) {
+                  addNotif(
+                    "Agent Revoked",
+                    "Revoked authorization and escrow budget for the AI Betting Agent",
+                    result.txHash
+                  );
                   onNotif(
                     <span>
                       Agent authorization revoked!{" "}
@@ -858,6 +1073,11 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
                 if (numericBudget <= 0) { onNotif("Enter a valid budget amount", "error"); return; }
                 const result = await authorizeAgent(numericBudget);
                 if (result && result.success) {
+                  addNotif(
+                    "Agent Authorized",
+                    `Authorized AI Betting Agent with a budget of $${budget} USDT`,
+                    result.txHash
+                  );
                   onNotif(
                     <span>
                       Agent active with ${budget} USDT!{" "}
@@ -1001,7 +1221,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
 }
 
 // ─── Portfolio Tab ────────────────────────────────────────────────────────────
-function PortfolioTab({ address, signer, refetchUsdt, onNotif }) {
+function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
   const { bets, loading, totalPnl, totalBetAmount, claimableBets, refetch: refetchBets } = useUserBets(address);
   const { claimWinnings, status: claimStatus } = useBetting(signer);
 
@@ -1017,10 +1237,10 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif }) {
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 24 }}>
+    <div className="portfolio-grid">
       <section>
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginBottom: 24 }}>
+        <div className="portfolio-stats-container">
           {[
             { label: "Total Wagered", value: `$${fmt(totalBetAmount)}`, icon: <Coins size={16} />, color: "var(--primary)" },
             { label: "Profit / Loss", value: `${totalPnl >= 0 ? "+" : ""}$${fmt(totalPnl)}`, icon: <TrendingUp size={16} />, color: totalPnl >= 0 ? "var(--green)" : "var(--red)" },
@@ -1068,6 +1288,46 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif }) {
                         <span style={{ fontSize: 12, color: "var(--primary)" }}>{bet.outcomeName}</span>
                         <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace" }}>@ {estMultiplier}x</span>
                         {bet.isAgentBet && <span className="badge badge-agent"><Bot size={9} />Agent</span>}
+                        {bet.txHash && (
+                          <a
+                            href={`${ACTIVE_NETWORK.explorerUrl}/tx/${bet.txHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 3,
+                              fontSize: 11,
+                              color: "var(--text-secondary)",
+                              textDecoration: "underline",
+                              marginLeft: 6
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.color = "var(--primary)"}
+                            onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"}
+                          >
+                            Verify <ExternalLink size={10} />
+                          </a>
+                        )}
+                        {bet.claimed && bet.claimTxHash && (
+                          <a
+                            href={`${ACTIVE_NETWORK.explorerUrl}/tx/${bet.claimTxHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 3,
+                              fontSize: 11,
+                              color: "var(--gold)",
+                              textDecoration: "underline",
+                              marginLeft: 6
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.color = "var(--primary)"}
+                            onMouseLeave={e => e.currentTarget.style.color = "var(--gold)"}
+                          >
+                            Verify Claim <ExternalLink size={10} />
+                          </a>
+                        )}
                       </div>
                     </div>
 
@@ -1091,6 +1351,11 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif }) {
                           onNotif(`Claiming $${fmt(bet.potentialPayout)} USDT…`, "info");
                           const txHash = await claimWinnings(bet.betId);
                           if (txHash) {
+                            addNotif(
+                              "Reward Claimed",
+                              `Claimed winnings of $${fmt(bet.potentialPayout)} USDT for match ${bet.homeTeam} vs ${bet.awayTeam}`,
+                              txHash
+                            );
                             onNotif(
                               <span>
                                 Claimed successfully!{" "}
@@ -1222,13 +1487,72 @@ export default function Home() {
   const [tab, setTab] = useState("matches");
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState(null);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
+  const [footerModal, setFooterModal] = useState(null);
+  
+  // Notification history state
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+  const notifRef = useRef(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("goalbet-theme") || "dark";
+    const saved = localStorage.getItem("goalbet-theme") || "light";
     setTheme(saved);
     document.documentElement.setAttribute("data-theme", saved);
+    
+    // Load notifications from local storage
+    const savedNotifs = localStorage.getItem("goalbet_notifications");
+    if (savedNotifs) {
+      try {
+        const parsed = JSON.parse(savedNotifs);
+        setNotifications(parsed);
+        setUnreadCount(parsed.filter(n => !n.read).length);
+      } catch (e) {
+        console.error("Failed to parse notifications", e);
+      }
+    }
   }, []);
+
+  // Close notification dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notifRef.current && !notifRef.current.contains(event.target)) {
+        setShowNotifDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const addNotification = useCallback((title, message, txHash = null) => {
+    const newNotif = {
+      id: Date.now() + Math.random().toString(36).substr(2, 9),
+      title,
+      message,
+      txHash,
+      timestamp: Date.now(),
+      read: false
+    };
+    setNotifications(prev => {
+      const updated = [newNotif, ...prev].slice(0, 50);
+      localStorage.setItem("goalbet_notifications", JSON.stringify(updated));
+      return updated;
+    });
+    setUnreadCount(prev => prev + 1);
+  }, []);
+
+  const toggleNotifications = () => {
+    setShowNotifDropdown(!showNotifDropdown);
+    if (!showNotifDropdown) {
+      setNotifications(prev => {
+        const updated = prev.map(n => ({ ...n, read: true }));
+        localStorage.setItem("goalbet_notifications", JSON.stringify(updated));
+        return updated;
+      });
+      setUnreadCount(0);
+    }
+  };
 
   const toggleTheme = () => {
     const next = theme === "dark" ? "light" : "dark";
@@ -1295,7 +1619,7 @@ export default function Home() {
           </div>
 
           {/* Desktop tabs */}
-          <div style={{ display: "flex", gap: 0, height: 60, alignItems: "center" }}>
+          <div className="desktop-only" style={{ display: "flex", gap: 0, height: 60, alignItems: "center" }}>
             {TABS.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)}
                 className={`tab-item ${tab === t.id ? "active" : ""}`}
@@ -1306,26 +1630,143 @@ export default function Home() {
           </div>
 
           {/* Right actions */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div className="nav-right">
             <button onClick={toggleTheme} className="btn-ghost" style={{ padding: "7px 10px", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }} title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}>
               {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
             </button>
-            <button className="btn-ghost" style={{ padding: "7px 10px", borderRadius: 8 }}>
-              <Bell size={15} />
-            </button>
-            <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", background: "var(--primary-alpha-bg)", border: "1px solid var(--primary-alpha-border)", borderRadius: 7 }}>
+            <div ref={notifRef} style={{ position: "relative" }}>
+              <button
+                onClick={toggleNotifications}
+                className="btn-ghost"
+                style={{
+                  padding: "7px 10px",
+                  borderRadius: 8,
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <Bell size={15} />
+                {unreadCount > 0 && (
+                  <span style={{
+                    position: "absolute",
+                    top: 2,
+                    right: 2,
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    background: "var(--primary)",
+                    boxShadow: "0 0 6px var(--primary)",
+                    border: "1px solid var(--bg)"
+                  }} />
+                )}
+              </button>
+
+              {showNotifDropdown && (
+                <div className="card animate-fade-in" style={{
+                  position: "absolute",
+                  top: "calc(100% + 8px)",
+                  right: 0,
+                  width: 320,
+                  maxHeight: 400,
+                  overflowY: "auto",
+                  zIndex: 200,
+                  padding: "16px",
+                  background: theme === "dark" ? "rgba(6, 6, 9, 0.90)" : "rgba(255, 255, 255, 0.94)",
+                  backdropFilter: "blur(28px)",
+                  WebkitBackdropFilter: "blur(28px)",
+                  border: "1px solid var(--border-bright)",
+                  boxShadow: theme === "dark"
+                    ? "0 10px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05)"
+                    : "0 10px 40px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.05)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700 }}>Notifications</span>
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={() => {
+                          setNotifications([]);
+                          localStorage.setItem("goalbet_notifications", "[]");
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "var(--text-muted)",
+                          fontSize: 11,
+                          fontWeight: 500,
+                          cursor: "pointer"
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.color = "var(--primary)"}
+                        onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}
+                      >
+                        Clear All
+                      </button>
+                    )}
+                  </div>
+
+                  {notifications.length === 0 ? (
+                    <div style={{ padding: "24px 0", textAlign: "center", color: "var(--text-secondary)", fontSize: 12 }}>
+                      No notifications yet
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      {notifications.map(n => (
+                        <div key={n.id} style={{
+                          padding: "10px",
+                          borderRadius: 8,
+                          background: "var(--card-header-bg)",
+                          border: "1px solid var(--border)",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 4
+                        }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            <span style={{ fontSize: 12, fontWeight: 750, color: "var(--text-primary)" }}>{n.title}</span>
+                            <span style={{ fontSize: 9, color: "var(--text-muted)" }}>{formatTimeAgo(n.timestamp)}</span>
+                          </div>
+                          <p style={{ fontSize: 11, color: "var(--text-secondary)", lineHeight: 1.3 }}>{n.message}</p>
+                          {n.txHash && (
+                            <a
+                              href={`${ACTIVE_NETWORK.explorerUrl}/tx/${n.txHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 4,
+                                fontSize: 10,
+                                color: "var(--primary)",
+                                textDecoration: "underline",
+                                marginTop: 4,
+                                fontWeight: 600
+                              }}
+                            >
+                              Verify On-Chain <ExternalLink size={8} />
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="desktop-only" style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", background: "var(--primary-alpha-bg)", border: "1px solid var(--primary-alpha-border)", borderRadius: 7 }}>
               <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 6px var(--primary)" }} />
               <span style={{ fontSize: 11, fontWeight: 600, color: "var(--primary)", fontFamily: "'JetBrains Mono', monospace" }}>{ACTIVE_NETWORK.name}</span>
             </div>
             {wallet.isConnected ? (
               <button className="btn-ghost" onClick={wallet.disconnect} style={{ gap: 7 }}>
-                <div style={{ width: 20, height: 20, borderRadius: "50%", background: "linear-gradient(135deg,var(--green),var(--primary))", display: "flex", alignItems: "center", justifyContent: "center" }} />
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{shortAddr(wallet.address)}</span>
                 <LogOut size={12} />
               </button>
             ) : (
               <ShimmerBtn variant="primary" onClick={wallet.connect}>
-                <Wallet size={14} /> {wallet.isConnecting ? "Connecting…" : "Connect Wallet"}
+                <Wallet size={14} /> {wallet.isConnecting ? "Connecting…" : <>Connect<span className="desktop-only"> Wallet</span></>}
               </ShimmerBtn>
             )}
           </div>
@@ -1350,30 +1791,14 @@ export default function Home() {
           </div>
 
           {/* Stats */}
-          <div style={{
-            display: "flex",
-            gap: 0,
-            background: "var(--bg-card)",
-            border: "1px solid var(--border)",
-            borderTop: "1px solid var(--border-bright)",
-            boxShadow: theme === "dark" ? "0 20px 48px rgba(0,0,0,0.8)" : "0 20px 48px rgba(15,23,42,0.05)",
-            borderRadius: 16,
-            overflow: "hidden",
-            backdropFilter: "blur(28px)"
-          }}>
+          <div className="hero-stats-container">
             {[
               { label: "Total Pool", value: `$${fmtK(totalPool)}`, icon: <Coins size={13} /> },
               { label: "Open Markets", value: `${matches ? matches.filter(m => m.status === 0).length : 0}`, icon: <Activity size={13} /> },
               { label: "Blockchain", value: "X Layer", icon: <Globe size={13} /> },
               { label: "Event", value: "X Cup 2026", icon: <Trophy size={13} /> },
-            ].map((s, i, arr) => (
-              <div key={s.label} style={{
-                padding: "20px 32px",
-                textAlign: "center",
-                borderRight: i < arr.length - 1 ? "1px solid var(--border)" : "none",
-                minWidth: 125,
-                position: "relative"
-              }}>
+            ].map((s, i) => (
+              <div key={s.label} className="hero-stat-item">
                 <div style={{
                   position: "absolute",
                   top: 0, left: "10%", right: "10%",
@@ -1390,28 +1815,67 @@ export default function Home() {
       </div>
 
       {/* ── Content ── */}
-      <main style={{ width: "100%", maxWidth: 1400, margin: "0 auto", padding: "32px 32px 72px", flex: 1 }}>
+      <main className="main-content">
         {tab === "matches" && <MatchesTab matches={matches} loading={matchesLoading} onBet={openBet} />}
-        {tab === "agent" && <AgentTab address={wallet.address} signer={wallet.signer} matches={matches} usdtBalance={usdtBalance} refetchUsdt={refetchUsdt} onNotif={notify} theme={theme} />}
-        {tab === "portfolio" && <PortfolioTab address={wallet.address} signer={wallet.signer} refetchUsdt={refetchUsdt} onNotif={notify} />}
+        {tab === "agent" && <AgentTab address={wallet.address} signer={wallet.signer} matches={matches} usdtBalance={usdtBalance} refetchUsdt={refetchUsdt} onNotif={notify} addNotif={addNotification} theme={theme} />}
+        {tab === "portfolio" && <PortfolioTab address={wallet.address} signer={wallet.signer} refetchUsdt={refetchUsdt} onNotif={notify} addNotif={addNotification} />}
         {tab === "leaderboard" && <LeaderboardTab />}
       </main>
 
       {/* ── Footer ── */}
-      <footer style={{ borderTop: "1px solid var(--border)", padding: "24px" }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+      <footer className="footer-section">
+        <div className="footer-inner">
           <div className="text-gradient-logo" style={{ fontFamily: "'DM Serif Display', serif", fontSize: 20, fontWeight: 400, letterSpacing: "-0.01em" }}>GoalBet</div>
-          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            {["Whitepaper", "Verification", "Odds API", "Support", "Privacy"].map(l => (
-              <a key={l} href="#" style={{ fontSize: 12, color: "var(--text-secondary)", textDecoration: "none", fontWeight: 500, transition: "color 0.2s" }}
+          <div className="footer-links">
+            {[
+              { label: "Whitepaper", key: "whitepaper" },
+              { label: "Verification", key: "verification" },
+              { label: "Odds API", key: "odds" },
+              { label: "Support", key: "support" },
+              { label: "Privacy", key: "privacy" }
+            ].map(l => (
+              <button key={l.key} onClick={() => setFooterModal(l.key)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "var(--text-secondary)", textDecoration: "none", fontWeight: 500, transition: "color 0.2s" }}
                 onMouseEnter={e => e.currentTarget.style.color = "var(--primary)"}
                 onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"}
-              >{l}</a>
+              >{l.label}</button>
             ))}
           </div>
-          <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 500 }}>© 2026 GoalBet · Secured by X Layer</span>
+          <div className="footer-credits">
+            <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 500 }}>© 2026 GoalBet · Secured by X Layer</span>
+            <span style={{ fontSize: 10.5, color: "var(--text-muted)", fontWeight: 500 }}>
+              Built by{" "}
+              <a
+                href="https://github.com/Ritesh59697"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="developer-link"
+              >
+                Ritesh59697
+              </a>
+            </span>
+          </div>
         </div>
       </footer>
+
+      {/* ── Sticky Mobile Navigation ── */}
+      <div className="mobile-only mobile-bottom-nav">
+        {TABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)}
+            className={`mobile-bottom-nav-item ${tab === t.id ? "active" : ""}`}>
+            {t.icon}
+            <span style={{ fontSize: 9 }}>{t.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* ── Info Modal ── */}
+      {footerModal && (
+        <InfoModal
+          type={footerModal}
+          onClose={() => setFooterModal(null)}
+          theme={theme}
+        />
+      )}
 
       {/* ── Bet Modal ── */}
       {modal && (
@@ -1422,6 +1886,12 @@ export default function Home() {
           signer={wallet.signer}
           theme={theme}
           onSuccess={result => {
+            const outcomeName = { 1: "Home Win", 2: "Draw", 3: "Away Win" }[result.outcome] || "Unknown";
+            addNotification(
+              "Bet Placed Successfully",
+              `Placed $${result.amount} USDT on ${outcomeName} for ${modal.match.homeTeam} vs ${modal.match.awayTeam}`,
+              result.txHash
+            );
             notify(
               <span>
                 Bet placed!{" "}

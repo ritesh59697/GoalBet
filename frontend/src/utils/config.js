@@ -1,4 +1,5 @@
 // frontend/src/utils/config.js
+import { ethers } from "ethers";
 
 // ─── X Layer Network Config ───────────────────────────────────────────────────
 
@@ -22,6 +23,40 @@ export const XLAYER_TESTNET = {
 
 export const IS_TESTNET = process.env.NEXT_PUBLIC_NETWORK === "testnet";
 export const ACTIVE_NETWORK = IS_TESTNET ? XLAYER_TESTNET : XLAYER_MAINNET;
+
+const RPC_ENDPOINTS = IS_TESTNET 
+  ? ["https://testrpc.xlayer.tech", "https://xlayertestrpc.okx.com/terigon"]
+  : ["https://rpc.xlayer.tech", "https://xlayerrpc.okx.com", "https://x-layer.drpc.org"];
+
+let activeRpcUrl = ACTIVE_NETWORK.rpcUrl;
+
+export function getRpcProvider() {
+  return new ethers.JsonRpcProvider(activeRpcUrl, undefined, { batchMaxCount: 1 });
+}
+
+export function switchRpc() {
+  const currentIndex = RPC_ENDPOINTS.indexOf(activeRpcUrl);
+  const nextIndex = (currentIndex + 1) % RPC_ENDPOINTS.length;
+  activeRpcUrl = RPC_ENDPOINTS[nextIndex];
+  console.log("Switched active RPC endpoint to:", activeRpcUrl);
+  return getRpcProvider();
+}
+
+export async function runWithRpcFallback(fn) {
+  const maxRetries = RPC_ENDPOINTS.length * 2; // Allow checking endpoints twice
+  let lastError;
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const provider = getRpcProvider();
+      return await fn(provider);
+    } catch (err) {
+      console.warn(`RPC Call failed with endpoint ${activeRpcUrl}:`, err.message || err);
+      lastError = err;
+      switchRpc();
+    }
+  }
+  throw lastError;
+}
 
 // ─── Contract Addresses (filled after deploy) ─────────────────────────────────
 export const CONTRACTS = {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { ethers } from "ethers";
-import { CONTRACTS, ACTIVE_NETWORK, USDT_DECIMALS } from "../utils/config";
+import { CONTRACTS, ACTIVE_NETWORK, USDT_DECIMALS, runWithRpcFallback } from "../utils/config";
 import { PREDICTION_MARKET_ABI, ERC20_ABI } from "../utils/abis";
 
 const AGENT_WALLET = process.env.NEXT_PUBLIC_AGENT_ADDRESS || "";
@@ -24,22 +24,23 @@ export function useAgent(
     setState(s => ({ ...s, loading: true }));
 
     try {
-      const provider = new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl, undefined, { batchMaxCount: 1 });
-      const contract = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, provider);
+      await runWithRpcFallback(async (provider) => {
+        const contract = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, provider);
 
-      const [agentAddr, budget] = await Promise.all([
-        contract.userAgent(userAddress),
-        contract.agentBudget(userAddress),
-      ]);
+        const [agentAddr, budget] = await Promise.all([
+          contract.userAgent(userAddress),
+          contract.agentBudget(userAddress),
+        ]);
 
-      const isAuthorized = agentAddr !== ethers.ZeroAddress;
-      setState(s => ({
-        ...s,
-        isAuthorized,
-        agentAddress: isAuthorized ? agentAddr : null,
-        remainingBudget: Number(ethers.formatUnits(budget, USDT_DECIMALS)),
-        loading: false,
-      }));
+        const isAuthorized = agentAddr !== ethers.ZeroAddress;
+        setState(s => ({
+          ...s,
+          isAuthorized,
+          agentAddress: isAuthorized ? agentAddr : null,
+          remainingBudget: Number(ethers.formatUnits(budget, USDT_DECIMALS)),
+          loading: false,
+        }));
+      });
     } catch (err) {
       setState(s => ({ ...s, loading: false, error: err.message }));
     }
