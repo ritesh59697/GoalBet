@@ -111,11 +111,18 @@ export class GoalBetAgent {
 
     const kellyFraction = Math.max(0, best.ev) * riskConfig.outcomeMultiplier * 0.25;
     const maxBet = profile.budget * riskConfig.maxBetPercent;
-    const suggestedAmount = Math.min(
+    let suggestedAmount = Math.min(
       Math.round(profile.budget * kellyFraction * 100) / 100,
       maxBet,
       100
     );
+
+    // Ensure suggestedAmount satisfies MIN_BET (0.1 USDT) but doesn't exceed user's remaining budget
+    if (suggestedAmount < 0.1 && profile.budget >= 0.1) {
+      suggestedAmount = 0.1;
+    } else if (suggestedAmount > profile.budget) {
+      suggestedAmount = profile.budget;
+    }
 
     const confidence = Math.min(100, Math.round(best.prob * riskConfig.outcomeMultiplier));
 
@@ -129,7 +136,7 @@ export class GoalBetAgent {
     return {
       outcome: best.outcome,
       confidence,
-      suggestedAmount: Math.max(0.1, suggestedAmount),
+      suggestedAmount,
       reasoning,
     };
   }
@@ -169,7 +176,7 @@ export class GoalBetAgent {
         matchIndex,
         recommendation.outcome,
         amountInUnits,
-        { gasLimit: 300000 }
+        { gasLimit: 500000 }
       );
 
       const receipt = await tx.wait();
@@ -211,12 +218,16 @@ export class GoalBetAgent {
     console.log(`📊 Total matches: ${matchCount}`);
 
     for (const user of users) {
-      if (user.budget < 1) {
-        console.log(`⏭️  Skipping ${user.address} — insufficient budget`);
+      if (user.budget < 0.1) {
+        console.log(`⏭️  Skipping ${user.address} — insufficient budget (${user.budget} USDT)`);
         continue;
       }
 
       for (let i = 0; i < Number(matchCount); i++) {
+        if (user.budget < 0.1) {
+          console.log(`⏭️  Stopping match run for ${user.address} — budget too low (${user.budget} USDT)`);
+          break;
+        }
         const analysis = await this.analyzeMatch(i, user);
         if (!analysis) continue;
 
@@ -269,11 +280,16 @@ export async function getAgentAnalysis(
 
   const best = outcomes[0];
   const kellyFraction = Math.max(0, best.ev) * riskConfig.outcomeMultiplier * 0.25;
-  const suggestedAmount = Math.min(
-    Math.max(1, Math.round(budget * kellyFraction)),
+  let suggestedAmount = Math.min(
+    Math.round(budget * kellyFraction * 100) / 100,
     budget * riskConfig.maxBetPercent,
     100
   );
+  if (suggestedAmount < 0.1 && budget >= 0.1) {
+    suggestedAmount = 0.1;
+  } else if (suggestedAmount > budget) {
+    suggestedAmount = budget;
+  }
 
   return {
     recommendation: {

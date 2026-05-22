@@ -13,6 +13,7 @@ export const PREDICTION_MARKET_ABI = [
 
   // Write
   "function placeBet(uint256 matchIndex, uint8 outcome, uint256 amount) returns (uint256)",
+  "function agentPlaceBet(address user, uint256 matchIndex, uint8 outcome, uint256 amount) returns (uint256)",
   "function claimWinnings(uint256 betId)",
   "function claimAll(uint256 matchIndex)",
   "function authorizeMyAgent(address agent, uint256 budget)",

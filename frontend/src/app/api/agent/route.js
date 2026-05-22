@@ -70,6 +70,10 @@ export async function POST(req) {
 
     // Analyze each match
     for (let i = 0; i < Number(matchCount); i++) {
+      if (userBudget < 0.1) {
+        console.log(`[Agent API] Stopping match loop: budget too low (${userBudget} USDT)`);
+        break;
+      }
       const match = await marketContract.getMatch(i);
 
       // Check status: 0 is MarketStatus.OPEN
@@ -145,11 +149,16 @@ export async function POST(req) {
         100 // Cap at 100 USDT per bet
       );
 
-      suggestedAmount = Math.max(1, suggestedAmount); // Minimum 1 USDT
+      // Ensure suggestedAmount satisfies MIN_BET (0.1 USDT) but doesn't exceed user's remaining budget
+      if (suggestedAmount < 0.1 && userBudget >= 0.1) {
+        suggestedAmount = 0.1;
+      } else if (suggestedAmount > userBudget) {
+        suggestedAmount = userBudget;
+      }
 
-      // If user doesn't have enough budget left for the suggested bet
-      if (suggestedAmount > userBudget) {
-        console.log(`[Agent API] Suggested bet ${suggestedAmount} exceeds remaining budget ${userBudget}`);
+      // If user doesn't have enough budget left for the suggested bet or it's below min bet
+      if (suggestedAmount > userBudget || suggestedAmount < 0.1) {
+        console.log(`[Agent API] Suggested bet ${suggestedAmount} exceeds remaining budget ${userBudget} or is below min bet`);
         continue;
       }
 
