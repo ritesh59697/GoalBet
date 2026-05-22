@@ -350,7 +350,7 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
               <div style={{ position: "relative" }}>
                 <Coins size={14} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
                 <input
-                  type="number" value={amount} min={0.1} step={0.1}
+                  type="number" value={amount} min={0.01} step={0.01}
                   onChange={e => setAmount(e.target.value)}
                   className="input"
                   style={{ paddingLeft: 34, paddingRight: 52 }}
@@ -706,7 +706,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
           ) : (
             <div style={{ position: "relative" }}>
               <Wallet size={14} style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
-              <input type="number" value={budget} min={0.1} step={0.1} onChange={e => setBudget(e.target.value)}
+              <input type="number" value={budget} min={0.01} step={0.01} onChange={e => setBudget(e.target.value)}
                 className="input" style={{ paddingLeft: 36, paddingRight: 60, height: 46, fontSize: 15 }} />
               <span style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 700, color: "var(--primary)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.05em" }}>USDT</span>
             </div>

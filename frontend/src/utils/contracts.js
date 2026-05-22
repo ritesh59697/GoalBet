@@ -1770,8 +1770,8 @@ export const MockUSDTABI = [
 ];
 
 export const CONTRACT_ADDRESSES = {
-  "PredictionMarket": "0x2373aE9BED8D1E42a7b5CA8B8476161af2236D3e",
-  "BetReceiptNFT": "0xb6bfaEbcD8379EBb11471576F5A1286634544464",
-  "USDT": "0xe416Dc382258bFaaAfD278bAE929e53d00b4c122",
-  "network": "xlayerTestnet"
+  "PredictionMarket": "0x12114397DCD0A58E10ff4eeb1d55c58558849dC7",
+  "BetReceiptNFT": "0x6afb09487F7b3C5826976fFE1f3b851bD7aec75D",
+  "USDT": "0x1E4a5963aBFD975d8c9021ce480b42188849D41d",
+  "network": "xlayer"
 };

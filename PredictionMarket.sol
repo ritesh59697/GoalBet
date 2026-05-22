@@ -16,7 +16,7 @@ contract PredictionMarket is Ownable, ReentrancyGuard {
     IERC20 public immutable usdt;
     BetReceiptNFT public immutable betNFT;
 
-    uint256 public constant MIN_BET = 1e5;        // 0.1 USDT (6 decimals)
+    uint256 public constant MIN_BET = 1e4;        // 0.01 USDT (6 decimals)
     uint256 public constant MAX_BET = 1000e6;     // 1000 USDT
     uint256 public constant PLATFORM_FEE = 200;   // 2% (basis points)
     uint256 public constant BASIS_POINTS = 10000;

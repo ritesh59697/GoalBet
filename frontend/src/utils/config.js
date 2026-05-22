@@ -32,7 +32,7 @@ export const CONTRACTS = {
 };
 
 // ─── App Constants ────────────────────────────────────────────────────────────
-export const MIN_BET_USDT  = 0.1;
+export const MIN_BET_USDT  = 0.01;
 export const MAX_BET_USDT  = 1000;
 export const USDT_DECIMALS = 6;
 export const PLATFORM_FEE  = 0.02; // 2%

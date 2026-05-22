@@ -192,9 +192,9 @@ export class GoalBetAgent {
       100 // hard cap 100 USDT per bet
     );
 
-    // Ensure suggestedAmount satisfies MIN_BET (0.1 USDT) but doesn't exceed user's remaining budget
-    if (suggestedAmount < 0.1 && profile.budget >= 0.1) {
-      suggestedAmount = 0.1;
+    // Ensure suggestedAmount satisfies MIN_BET (0.01 USDT) but doesn't exceed user's remaining budget
+    if (suggestedAmount < 0.01 && profile.budget >= 0.01) {
+      suggestedAmount = 0.01;
     } else if (suggestedAmount > profile.budget) {
       suggestedAmount = profile.budget;
     }
@@ -236,7 +236,7 @@ export class GoalBetAgent {
     }
 
     // Skip if suggested amount too low
-    if (recommendation.suggestedAmount < 0.1) {
+    if (recommendation.suggestedAmount < 0.01) {
       return {
         type: "SKIPPED",
         matchIndex,
@@ -298,13 +298,13 @@ export class GoalBetAgent {
     console.log(`📊 Total matches: ${matchCount}`);
 
     for (const user of users) {
-      if (user.budget < 0.1) {
+      if (user.budget < 0.01) {
         console.log(`⏭️  Skipping ${user.address} — insufficient budget (${user.budget} USDT)`);
         continue;
       }
 
       for (let i = 0; i < Number(matchCount); i++) {
-        if (user.budget < 0.1) {
+        if (user.budget < 0.01) {
           console.log(`⏭️  Stopping match run for ${user.address} — budget too low (${user.budget} USDT)`);
           break;
         }
@@ -377,8 +377,8 @@ export async function getAgentAnalysis(
     budget * riskConfig.maxBetPercent,
     100
   );
-  if (suggestedAmount < 0.1 && budget >= 0.1) {
-    suggestedAmount = 0.1;
+  if (suggestedAmount < 0.01 && budget >= 0.01) {
+    suggestedAmount = 0.01;
   } else if (suggestedAmount > budget) {
     suggestedAmount = budget;
   }

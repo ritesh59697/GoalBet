@@ -57,10 +57,10 @@ export async function POST(req) {
     const rawBudget = await marketContract.agentBudget(userAddress);
     let userBudget = Number(ethers.formatUnits(rawBudget, 6)); // in USDT (6 decimals)
 
-    if (userBudget < 0.1) {
+    if (userBudget < 0.01) {
       return NextResponse.json({
         actions: [],
-        message: "Agent stopped: Escrowed budget is below 0.1 USDT. Please top up your budget."
+        message: "Agent stopped: Escrowed budget is below 0.01 USDT. Please top up your budget."
       });
     }
 
@@ -70,7 +70,7 @@ export async function POST(req) {
 
     // Analyze each match
     for (let i = 0; i < Number(matchCount); i++) {
-      if (userBudget < 0.1) {
+      if (userBudget < 0.01) {
         console.log(`[Agent API] Stopping match loop: budget too low (${userBudget} USDT)`);
         break;
       }
@@ -149,15 +149,15 @@ export async function POST(req) {
         100 // Cap at 100 USDT per bet
       );
 
-      // Ensure suggestedAmount satisfies MIN_BET (0.1 USDT) but doesn't exceed user's remaining budget
-      if (suggestedAmount < 0.1 && userBudget >= 0.1) {
-        suggestedAmount = 0.1;
+      // Ensure suggestedAmount satisfies MIN_BET (0.01 USDT) but doesn't exceed user's remaining budget
+      if (suggestedAmount < 0.01 && userBudget >= 0.01) {
+        suggestedAmount = 0.01;
       } else if (suggestedAmount > userBudget) {
         suggestedAmount = userBudget;
       }
 
       // If user doesn't have enough budget left for the suggested bet or it's below min bet
-      if (suggestedAmount > userBudget || suggestedAmount < 0.1) {
+      if (suggestedAmount > userBudget || suggestedAmount < 0.01) {
         console.log(`[Agent API] Suggested bet ${suggestedAmount} exceeds remaining budget ${userBudget} or is below min bet`);
         continue;
       }
