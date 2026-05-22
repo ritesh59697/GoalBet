@@ -1,4 +1,4 @@
-# GoalBet — Autonomous World Cup Prediction Market on X Layer
+# ⚽️ GoalBet - Autonomous World Cup Prediction Market on X Layer
 
 > **Autonomous AI Agent Delegation** · **Dynamic Parimutuel Pooling** · **100% On-Chain SVG NFT Receipts**
 > Deployed on **OKX X Layer Mainnet** for the **Build-X Hackathon: X Cup 2026** (May 19–28).
