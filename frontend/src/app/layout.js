@@ -11,7 +11,7 @@ export function useWalletContext() {
 export default function RootLayout({ children }) {
   const wallet = useWallet();
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="dark">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var theme = localStorage.getItem('goalbet-theme') || 'light';
+                var theme = localStorage.getItem('goalbet-theme') || 'dark';
                 document.documentElement.setAttribute('data-theme', theme);
               })()
             `,

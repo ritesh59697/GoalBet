@@ -171,29 +171,30 @@ function MatchCard({ match, onBet }) {
       </div>
 
       {/* Teams */}
-      <div style={{ padding: "24px 20px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ padding: "26px 20px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ textAlign: "center", flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <TeamAvatar emoji={match.homeFlag} img={homeImg} size={56} borderColor="var(--vs-badge-border)" />
-          <div style={{ marginTop: 10, fontSize: 14, fontWeight: 750, letterSpacing: "-0.01em", color: "var(--text-primary)" }}>{match.homeTeam}</div>
-          <div style={{ fontSize: 9.5, color: "var(--text-secondary)", marginTop: 2, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>{match.homeFlag} Home</div>
+          <TeamAvatar emoji={match.homeFlag} img={homeImg} size={64} borderColor="rgba(0, 212, 255, 0.35)" />
+          <div className="font-sans" style={{ marginTop: 12, fontSize: 14.5, fontWeight: 800, letterSpacing: "-0.01em", color: "var(--text-primary)" }}>{match.homeTeam}</div>
+          <div style={{ fontSize: 9.5, color: "var(--text-secondary)", marginTop: 2, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{match.homeFlag} Home</div>
         </div>
 
-        <div style={{ textAlign: "center", padding: "0 16px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ textAlign: "center", padding: "0 12px", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div style={{
-            fontSize: 10, fontWeight: 900, color: "var(--primary)",
+            fontSize: 9.5, fontWeight: 900, color: "var(--primary)",
             letterSpacing: "0.12em", padding: "3px 9px", background: "var(--vs-badge-bg)",
             border: "1px solid var(--vs-badge-border)", borderRadius: 20,
-            marginBottom: 6, textShadow: "var(--vs-badge-shadow)"
+            marginBottom: 6, textShadow: "var(--vs-badge-shadow)",
+            boxShadow: "0 0 12px rgba(0, 212, 255, 0.2)"
           }}>VS</div>
-          <div style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, letterSpacing: "0.06em" }}>
+          <div style={{ fontSize: 8.5, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, letterSpacing: "0.06em" }}>
             LIQUIDITY
           </div>
         </div>
 
         <div style={{ textAlign: "center", flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <TeamAvatar emoji={match.awayFlag} img={awayImg} size={56} borderColor="var(--purple-alpha-border)" />
-          <div style={{ marginTop: 10, fontSize: 14, fontWeight: 750, letterSpacing: "-0.01em", color: "var(--text-primary)" }}>{match.awayTeam}</div>
-          <div style={{ fontSize: 9.5, color: "var(--text-secondary)", marginTop: 2, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>{match.awayFlag} Away</div>
+          <TeamAvatar emoji={match.awayFlag} img={awayImg} size={64} borderColor="rgba(123, 47, 247, 0.35)" />
+          <div className="font-sans" style={{ marginTop: 12, fontSize: 14.5, fontWeight: 800, letterSpacing: "-0.01em", color: "var(--text-primary)" }}>{match.awayTeam}</div>
+          <div style={{ fontSize: 9.5, color: "var(--text-secondary)", marginTop: 2, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{match.awayFlag} Away</div>
         </div>
       </div>
 
@@ -211,7 +212,7 @@ function MatchCard({ match, onBet }) {
             onClick={() => onBet(match, opt.o)}
           >
             <span className="odds-label">{opt.label}</span>
-            <span className="odds-value">{opt.odds}x</span>
+            <span className="odds-value font-mono">{opt.odds}x</span>
           </button>
         ))}
       </div>
@@ -223,15 +224,15 @@ function MatchCard({ match, onBet }) {
           <div className="pool-bar-draw" style={{ width: `${dp}%` }} />
           <div className="pool-bar-away" style={{ width: `${ap}%` }} />
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 9.5, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+        <div className="font-mono" style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 9.5, fontWeight: 700 }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--primary)" }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 4px var(--primary)" }} /> {hp}%
           </span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--text-secondary)" }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--dot-draw)" }} /> {dp}%
           </span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--red)" }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--red)", boxShadow: "0 0 4px var(--red)" }} /> {ap}%
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: "var(--purple)" }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--purple)", boxShadow: "0 0 4px var(--purple)" }} /> {ap}%
           </span>
         </div>
       </div>
@@ -299,39 +300,39 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 1000,
-      background: theme === "dark" ? "rgba(0,0,0,0.88)" : "rgba(15,23,42,0.6)", backdropFilter: "blur(12px)",
+      background: theme === "dark" ? "rgba(2,2,3,0.85)" : "rgba(15, 23, 42, 0.3)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: 16
     }} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="card animate-slide-up" style={{ width: "100%", maxWidth: 440, border: "1px solid var(--primary-alpha-border)" }}>
+      <div className="card animate-slide-up" style={{ width: "100%", maxWidth: 440, border: "1px solid var(--border)", borderTop: "1px solid rgba(0, 212, 255, 0.25)" }}>
         <div style={{ padding: 24 }}>
           {/* Header */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <div>
-              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 4 }}>
+              <h2 className="font-serif" style={{ fontSize: 22, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 4 }}>
                 Place Your Bet
               </h2>
-              <div style={{ fontSize: 12, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 8 }}>
+              <div className="font-sans" style={{ fontSize: 12, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 8 }}>
                 <TeamAvatar emoji={match.homeFlag} img={homeImg} size={18} />
                 <span style={{ fontWeight: 600 }}>{match.homeTeam} vs {match.awayTeam}</span>
                 <TeamAvatar emoji={match.awayFlag} img={awayImg} size={18} />
               </div>
             </div>
-            <button onClick={onClose} className="btn-ghost" style={{ padding: "6px 8px", borderRadius: 8 }}>
-              <X size={16} />
+            <button onClick={onClose} className="btn-ghost" style={{ width: 32, height: 32, padding: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <X size={14} />
             </button>
           </div>
 
           <>
             {/* Outcome selector */}
             <div style={{ marginBottom: 18 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 9 }}>Select Outcome</div>
+              <div className="font-sans" style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 9 }}>Select Outcome</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
                 {[1, 2, 3].map(o => {
                   const isSel = outcome === o;
                   const oColors = {
                     1: { text: "var(--primary)", border: "var(--primary-alpha-border)", bg: "var(--primary-alpha-bg)", shadow: "var(--vs-badge-shadow)" },
-                    2: { text: "var(--text-primary)", border: "var(--border-bright)", bg: "var(--border)", shadow: "none" },
-                    3: { text: "var(--red)", border: "var(--red-alpha-border)", bg: "var(--red-alpha-bg)", shadow: "none" }
+                    2: { text: "var(--text-primary)", border: "var(--border-bright)", bg: "var(--pool-track-bg)", shadow: "none" },
+                    3: { text: "var(--purple)", border: "var(--purple-alpha-border)", bg: "var(--purple-alpha-bg)", shadow: "0 0 12px rgba(123, 47, 247, 0.2)" }
                   }[o];
                   return (
                     <button key={o} onClick={() => setOutcome(o)} style={{
@@ -341,10 +342,10 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
                       textAlign: "center", transition: "all 0.18s",
                       boxShadow: isSel ? oColors.shadow : "none"
                     }}>
-                      <div style={{ fontSize: 10, fontWeight: 600, color: isSel ? oColors.text : "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
+                      <div className="font-sans" style={{ fontSize: 10, fontWeight: 700, color: isSel ? oColors.text : "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
                         {["HOME", "DRAW", "AWAY"][o - 1]}
                       </div>
-                      <div style={{ fontSize: 20, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: isSel ? oColors.text : "var(--text-primary)" }}>
+                      <div className="font-mono" style={{ fontSize: 20, fontWeight: 750, color: isSel ? oColors.text : "var(--text-primary)" }}>
                         {odds[o]}x
                       </div>
                     </button>
@@ -355,13 +356,13 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
 
             {/* Amount */}
             <div style={{ marginBottom: 18 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 9 }}>Stake Amount (USDT)</div>
+              <div className="font-sans" style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 9 }}>Stake Amount (USDT)</div>
               <div style={{ display: "flex", gap: 6, marginBottom: 9 }}>
                 {[10, 25, 50, 100, 250].map(a => {
                   const isActive = parseFloat(amount) === a;
                   return (
-                    <button key={a} onClick={() => setAmount(a.toString())} style={{
-                      flex: 1, padding: "7px 0", borderRadius: 6, fontSize: 12, fontWeight: 600,
+                    <button key={a} onClick={() => setAmount(a.toString())} className="font-mono" style={{
+                      flex: 1, padding: "7px 0", borderRadius: 6, fontSize: 12, fontWeight: 700,
                       border: `1px solid ${isActive ? "var(--primary)" : "var(--border)"}`,
                       background: isActive ? "var(--btn-amount-bg)" : "transparent",
                       color: isActive ? "var(--primary)" : "var(--text-muted)",
@@ -375,10 +376,10 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
                 <input
                   type="number" value={amount} min={0.01} step={0.01}
                   onChange={e => setAmount(e.target.value)}
-                  className="input"
+                  className="input font-mono"
                   style={{ paddingLeft: 34, paddingRight: 52 }}
                 />
-                <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 600, color: "var(--primary)", fontFamily: "'JetBrains Mono', monospace" }}>USDT</span>
+                <span className="font-mono" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 700, color: "var(--primary)" }}>USDT</span>
               </div>
             </div>
 
@@ -396,14 +397,14 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
                   display: "flex", justifyContent: "space-between", alignItems: "center"
                 }}>
                   <div>
-                    <div style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Potential Payout</div>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: profitColor, fontFamily: "'JetBrains Mono', monospace", letterSpacing: -0.5 }}>
+                    <div className="font-sans" style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>Potential Payout</div>
+                    <div className="font-mono" style={{ fontSize: 22, fontWeight: 800, color: profitColor, letterSpacing: -0.5 }}>
                       ${fmt(payout)}
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 10, color: profitColor, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>{isLoss ? "Loss" : "Profit"}</div>
-                    <div style={{ fontSize: 22, fontWeight: 700, color: profitColor, fontFamily: "'JetBrains Mono', monospace", letterSpacing: -0.5 }}>
+                    <div className="font-sans" style={{ fontSize: 10, color: profitColor, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>{isLoss ? "Loss" : "Profit"}</div>
+                    <div className="font-mono" style={{ fontSize: 22, fontWeight: 800, color: profitColor, letterSpacing: -0.5 }}>
                       {profitSign}${fmt(Math.abs(profit))}
                     </div>
                   </div>
@@ -576,24 +577,32 @@ function InfoModal({ type, onClose, theme }) {
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 10000,
-      background: theme === "dark" ? "rgba(0,0,0,0.85)" : "rgba(15,23,42,0.6)", backdropFilter: "blur(12px)",
+      background: theme === "dark" ? "rgba(2,2,3,0.85)" : "rgba(15, 23, 42, 0.3)",
+      backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: 16
     }} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="card animate-slide-up" style={{ width: "100%", maxWidth: 480, border: "1px solid var(--primary-alpha-border)", maxHeight: "90vh", overflowY: "auto" }}>
+      <div className="card animate-slide-up" style={{
+        width: "100%",
+        maxWidth: 480,
+        border: "1px solid var(--border)",
+        borderTop: "1px solid rgba(0, 212, 255, 0.25)",
+        maxHeight: "90vh",
+        overflowY: "auto"
+      }}>
         <div style={{ padding: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
             <div>
-              <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 4 }}>
+              <h2 className="font-serif" style={{ fontSize: 24, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 4 }}>
                 {data.title}
               </h2>
-              <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>{data.subtitle}</p>
+              <p className="font-sans" style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>{data.subtitle}</p>
             </div>
-            <button onClick={onClose} className="btn-ghost" style={{ padding: "6px 8px", borderRadius: 8 }}>
-              <X size={16} />
+            <button onClick={onClose} className="btn-ghost" style={{ width: 32, height: 32, padding: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <X size={14} />
             </button>
           </div>
           <div style={{ height: 1, background: "var(--border)", marginBottom: 18 }} />
-          {data.content}
+          <div className="font-sans">{data.content}</div>
         </div>
       </div>
     </div>
@@ -609,9 +618,9 @@ function MatchesTab({ matches = [], loading, onBet }) {
   return (
     <div>
       {/* Controls */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
+      <div className="font-sans" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
         <div>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 34, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 6 }}>
+          <h2 className="font-serif" style={{ fontSize: 34, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 6 }}>
             Featured <span className="text-gradient-primary-purple" style={{ fontStyle: "italic" }}>Matches</span>
           </h2>
           <p style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>Top liquidity prediction pools · FIFA World Cup 2026 · X Layer</p>
@@ -619,7 +628,7 @@ function MatchesTab({ matches = [], loading, onBet }) {
         <div style={{ position: "relative" }}>
           <Search size={14} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-secondary)" }} />
           <input placeholder="Search matches…" value={search} onChange={e => setSearch(e.target.value)}
-            className="input" style={{ paddingLeft: 36, width: 240, fontSize: 13, height: 42, borderRadius: 8 }} />
+            className="input font-sans" style={{ paddingLeft: 36, width: 240, fontSize: 13, height: 42, borderRadius: 8 }} />
         </div>
       </div>
 
@@ -664,19 +673,19 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
   } = useAgent(address, signer);
 
   const [logs, setLogs] = useState([
-    { text: "[System] GoalBet Agent v2.1 initialized.", col: "var(--text-secondary)" },
-    { text: "[Auth] Connected to X Layer Oracle nodes.", col: "var(--text-secondary)" },
-    { text: "[Scan] Monitoring active World Cup markets…", col: "var(--text-secondary)" },
-    { text: "> Odds engine ready. EV model loaded.", col: "#a78bfa" },
-    { text: "> Kelly criterion sizing: ACTIVE", col: "#00d4ff" },
-    { text: "[Success] Agent standing by for authorization.", col: "#4ade80" },
+    { text: "[System] GoalBet Agent v2.1 initialized.", col: "var(--terminal-system)" },
+    { text: "[Auth] Connected to X Layer Oracle nodes.", col: "var(--terminal-system)" },
+    { text: "[Scan] Monitoring active World Cup markets…", col: "var(--terminal-system)" },
+    { text: "> Odds engine ready. EV model loaded.", col: "var(--terminal-info)" },
+    { text: "> Kelly criterion sizing: ACTIVE", col: "var(--terminal-primary)" },
+    { text: "[Success] Agent standing by for authorization.", col: "var(--terminal-success)" },
   ]);
 
   useEffect(() => {
     if (isAuthorized) {
-      addLog(`[Active] Agent is authorized on-chain. Remaining budget: $${remainingBudget} USDT.`, "#4ade80");
+      addLog(`[Active] Agent is authorized on-chain. Remaining budget: $${remainingBudget} USDT.`, "var(--terminal-success)");
     } else {
-      addLog("[Standby] Agent unauthorized on-chain. Ready to accept delegation.", "var(--text-secondary)");
+      addLog("[Standby] Agent unauthorized on-chain. Ready to accept delegation.", "var(--terminal-system)");
     }
   }, [isAuthorized, remainingBudget]);
 
@@ -696,7 +705,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
       onNotif("No matches available to analyze.", "error");
       return;
     }
-    setAn(true); addLog("[Scan] Running EV analysis across all markets…", "#a78bfa");
+    setAn(true); addLog("[Scan] Running EV analysis across all markets…", "var(--terminal-info)");
     try {
       const currentBudget = isAuthorized ? remainingBudget : (parseFloat(budget) || 0);
       const results = await Promise.all(matches.map(async m => {
@@ -721,10 +730,10 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
       setAns(results);
       const confThreshold = risk === "conservative" ? 70 : risk === "moderate" ? 55 : 40;
       const recCount = results.filter(r => r.recommendation?.confidence >= confThreshold).length;
-      addLog(`[Done] Analysis complete. ${recCount} bets recommended.`, "#4ade80");
+      addLog(`[Done] Analysis complete. ${recCount} bets recommended.`, "var(--terminal-success)");
     } catch (e) {
       onNotif("Analysis failed: " + e.message, "error");
-      addLog("[Error] Analysis failed.", "#f87171");
+      addLog("[Error] Analysis failed.", "var(--terminal-danger)");
     }
     setAn(false);
   };
@@ -734,7 +743,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
       onNotif("Authorize the agent first before running a cycle!", "error");
       return;
     }
-    addLog("[Trigger] Initiating manual agent cycle run on X Layer...", "#00d4ff");
+    addLog("[Trigger] Initiating manual agent cycle run on X Layer...", "var(--terminal-primary)");
     setRunningCycle(true);
     try {
       const res = await fetch("/api/agent-run", {
@@ -749,11 +758,11 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
       });
       const data = await res.json();
       if (data.success) {
-        addLog(`[Summary] Bets Placed: ${data.summary.betsPlaced}, Skipped: ${data.summary.skipped}, Errors: ${data.summary.errors}`, "#4ade80");
+        addLog(`[Summary] Bets Placed: ${data.summary.betsPlaced}, Skipped: ${data.summary.skipped}, Errors: ${data.summary.errors}`, "var(--terminal-success)");
         if (data.actions && data.actions.length > 0) {
           data.actions.forEach(act => {
             if (act.type === "BET_PLACED") {
-              addLog(`[Bet Placed] Match ${act.matchIndex}: Outcome ${act.outcome} | Amount: $${act.amount} USDT | TX: ${act.txHash.slice(0, 12)}...`, "#4ade80", act.txHash);
+              addLog(`[Bet Placed] Match ${act.matchIndex}: Outcome ${act.outcome} | Amount: $${act.amount} USDT | TX: ${act.txHash.slice(0, 12)}...`, "var(--terminal-success)", act.txHash);
               const outcomeLabel = { 1: "Home Win", 2: "Draw", 3: "Away Win" }[act.outcome] || "Unknown";
               addNotif(
                 "Agent Bet Placed",
@@ -761,13 +770,13 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
                 act.txHash
               );
             } else if (act.type === "SKIPPED") {
-              addLog(`[Skipped] Match ${act.matchIndex}: ${act.reasoning}`, "var(--text-muted)");
+              addLog(`[Skipped] Match ${act.matchIndex}: ${act.reasoning}`, "var(--terminal-system)");
             } else if (act.type === "ERROR") {
-              addLog(`[Error] Match ${act.matchIndex}: ${act.reasoning}`, "#f87171");
+              addLog(`[Error] Match ${act.matchIndex}: ${act.reasoning}`, "var(--terminal-danger)");
             }
           });
         } else {
-          addLog("[Cycle] No actions taken by agent.", "var(--text-muted)");
+          addLog("[Cycle] No actions taken by agent.", "var(--terminal-system)");
         }
         addNotif(
           "Agent Run Completed",
@@ -778,11 +787,11 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
         refetchUsdt();
         onNotif("Agent cycle execution completed successfully!", "success");
       } else {
-        addLog(`[Error] Agent cycle failed: ${data.error}`, "#f87171");
+        addLog(`[Error] Agent cycle failed: ${data.error}`, "var(--terminal-danger)");
         onNotif(`Agent cycle failed: ${data.error}`, "error");
       }
     } catch (e) {
-      addLog(`[Error] Network error during execution: ${e.message}`, "#f87171");
+      addLog(`[Error] Network error during execution: ${e.message}`, "var(--terminal-danger)");
       onNotif("Network error during agent execution.", "error");
     } finally {
       setRunningCycle(false);
@@ -790,13 +799,14 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
   };
 
   return (
-    <div className="agent-tab-container">
+    <div className="agent-tab-container font-sans">
 
       {/* ── Left: Config panel ── */}
       <div className="card" style={{
         padding: "32px",
         display: "flex",
         flexDirection: "column",
+        minHeight: 620,
       }}>
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32 }}>
@@ -912,7 +922,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
             <div style={{ position: "relative" }}>
               <Wallet size={14} style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
               <input type="number" value={budget} min={0.01} step={0.01} onChange={e => setBudget(e.target.value)}
-                className="input" style={{ paddingLeft: 36, paddingRight: 60, height: 46, fontSize: 15 }} />
+                className="input font-mono" style={{ paddingLeft: 36, paddingRight: 60, height: 46, fontSize: 15 }} />
               <span style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 700, color: "var(--primary)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.05em" }}>USDT</span>
             </div>
           )}
@@ -1115,7 +1125,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
         padding: "32px 28px 28px",
         display: "flex",
         flexDirection: "column",
-        minHeight: 520,
+        minHeight: 620,
       }}>
         {/* Log header */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
@@ -1237,7 +1247,7 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
   }
 
   return (
-    <div className="portfolio-grid">
+    <div className="portfolio-grid font-sans">
       <section>
         {/* Stats */}
         <div className="portfolio-stats-container">
@@ -1247,13 +1257,13 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
             { label: "Claimable", value: `$${fmt(claimable)}`, icon: <Unlock size={16} />, color: "var(--gold)" },
           ].map(s => (
             <div key={s.label} className="stat-card" style={{ background: "var(--card-header-bg)", border: "1px solid var(--border)", borderRadius: 10, padding: "16px 18px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6, color: s.color }}>{s.icon}<span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{s.label}</span></div>
-              <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.5, color: s.color, fontFamily: "'JetBrains Mono', monospace" }}>{s.value}</div>
+              <div className="font-sans" style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6, color: s.color }}>{s.icon}<span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{s.label}</span></div>
+              <div className="font-mono" style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.5, color: s.color }}>{s.value}</div>
             </div>
           ))}
         </div>
 
-        <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 22, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 18, display: "flex", alignItems: "center", gap: 10 }}>
+        <h2 className="font-serif" style={{ fontSize: 22, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 18, display: "flex", alignItems: "center", gap: 10 }}>
           <Wallet size={18} style={{ color: "var(--primary)" }} /> My Bets
         </h2>
 
@@ -1271,9 +1281,19 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
           ) : (
             bets.map(bet => {
               const estMultiplier = bet.amount > 0 ? (bet.potentialPayout / bet.amount).toFixed(2) : "0.00";
+              const borderLeftStyle = bet.isWinner 
+                ? "4px solid #00ff88" 
+                : bet.matchStatus === 0 
+                  ? "4px solid #00d4ff" 
+                  : "4px solid rgba(255, 255, 255, 0.05)";
+              const boxShadowStyle = bet.isWinner
+                ? "0 16px 40px rgba(0, 0, 0, 0.75), inset 4px 0 10px rgba(0, 255, 136, 0.08)"
+                : bet.matchStatus === 0
+                  ? "0 16px 40px rgba(0, 0, 0, 0.75), inset 4px 0 10px rgba(0, 212, 255, 0.08)"
+                  : "0 16px 40px rgba(0, 0, 0, 0.75)";
               return (
-                <div key={bet.betId} className="card" style={{ padding: "16px 20px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                <div key={bet.betId} className="card" style={{ padding: "16px 20px", borderLeft: borderLeftStyle, boxShadow: boxShadowStyle }}>
+                  <div className="font-sans" style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
                     {/* Teams */}
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       {TEAM_IMAGES[bet.homeTeam] ? <img src={TEAM_IMAGES[bet.homeTeam]} alt="" style={{ width: 28, height: 28, borderRadius: 4, objectFit: "cover" }} /> : <span style={{ fontSize: 20 }}>{TEAM_FLAGS[bet.homeTeam] || "🏴"}</span>}
@@ -1425,7 +1445,7 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
             </div>
           ))}
           <div style={{ padding: "12px 16px", textAlign: "center" }}>
-            <button className="btn-ghost" style={{ fontSize: 12, gap: 5 }}>View All <ChevronRight size={13} /></button>
+            <button onClick={() => setTab("leaderboard")} className="btn-ghost" style={{ fontSize: 12, gap: 5, width: "100%", justifyContent: "center" }}>View All <ChevronRight size={13} /></button>
           </div>
         </div>
       </aside>
@@ -1436,21 +1456,21 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
 // ─── Leaderboard Tab ──────────────────────────────────────────────────────────
 function LeaderboardTab() {
   return (
-    <div style={{ maxWidth: 700 }}>
+    <div className="font-sans" style={{ maxWidth: 700 }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 28, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 6, display: "flex", alignItems: "center", gap: 12 }}>
+        <h1 className="font-serif" style={{ fontSize: 28, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 6, display: "flex", alignItems: "center", gap: 12 }}>
           <Trophy size={24} style={{ color: "var(--gold)" }} /> Global Leaderboard
         </h1>
         <p style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>Ranked by on-chain USDT profit · World Cup 2026 · X Layer</p>
       </div>
       <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "12px 20px", borderBottom: "1px solid var(--border)", display: "grid", gridTemplateColumns: "48px 1fr 80px 80px", gap: 8, fontSize: 10, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
+        <div className="font-sans" style={{ padding: "12px 20px", borderBottom: "1px solid var(--border)", display: "grid", gridTemplateColumns: "48px 1fr 80px 100px", gap: 8, fontSize: 10, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
           <span>Rank</span><span>Wallet</span><span style={{ textAlign: "center" }}>Win %</span><span style={{ textAlign: "right" }}>Profit</span>
         </div>
         {LEADERBOARD.map(row => (
           <div key={row.rank} style={{
             padding: "16px 20px", borderBottom: "1px solid var(--border)",
-            display: "grid", gridTemplateColumns: "48px 1fr 80px 80px", gap: 8,
+            display: "grid", gridTemplateColumns: "48px 1fr 80px 100px", gap: 8,
             alignItems: "center", cursor: "pointer", transition: "background 0.15s"
           }}
             onMouseEnter={e => e.currentTarget.style.background = "var(--border-bright)"}
@@ -1462,16 +1482,16 @@ function LeaderboardTab() {
               </span>
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{row.addr}</div>
-              <div style={{ fontSize: 10, color: "var(--text-muted)" }}>X Layer Testnet · {100 - row.rank * 5} bets</div>
+              <div className="font-mono" style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{row.addr}</div>
+              <div style={{ fontSize: 10, color: "var(--text-muted)" }}>X Layer Mainnet · {100 - row.rank * 5} bets</div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", fontFamily: "'JetBrains Mono', monospace" }}>{row.winRate}%</div>
+              <div className="font-mono" style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)" }}>{row.winRate}%</div>
               <div style={{ height: 3, borderRadius: 2, background: "var(--border-bright)", marginTop: 4, overflow: "hidden" }}>
                 <div style={{ height: "100%", width: `${row.winRate}%`, background: "linear-gradient(90deg,var(--primary),var(--purple))", borderRadius: 2 }} />
               </div>
             </div>
-            <div style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "var(--green)", fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="font-mono" style={{ textAlign: "right", fontSize: 13, fontWeight: 700, color: "var(--green)" }}>
               +{fmtK(row.profit)}
             </div>
           </div>
@@ -1487,7 +1507,7 @@ export default function Home() {
   const [tab, setTab] = useState("matches");
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState(null);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
   const [footerModal, setFooterModal] = useState(null);
   
   // Notification history state
@@ -1495,9 +1515,10 @@ export default function Home() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const notifRef = useRef(null);
+  const [showSwapWarning, setShowSwapWarning] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem("goalbet-theme") || "light";
+    const saved = localStorage.getItem("goalbet-theme") || "dark";
     setTheme(saved);
     document.documentElement.setAttribute("data-theme", saved);
     
@@ -1524,6 +1545,13 @@ export default function Home() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Reset swap warning when wallet changes
+  useEffect(() => {
+    if (wallet.address) {
+      setShowSwapWarning(true);
+    }
+  }, [wallet.address]);
 
   const addNotification = useCallback((title, message, txHash = null) => {
     const newNotif = {
@@ -1562,7 +1590,7 @@ export default function Home() {
   };
 
   const { matches, loading: matchesLoading, refetch: refetchMatches } = useMatches();
-  const { balance: usdtBalance, refetch: refetchUsdt } = useUSDT(wallet.address, wallet.provider);
+  const { balance: usdtBalance, loading: usdtLoading, refetch: refetchUsdt } = useUSDT(wallet.address, wallet.provider);
 
   const notify = useCallback((msg, type = "success") => {
     setToast({ msg, type });
@@ -1673,13 +1701,12 @@ export default function Home() {
                   overflowY: "auto",
                   zIndex: 200,
                   padding: "16px",
-                  background: theme === "dark" ? "rgba(6, 6, 9, 0.90)" : "rgba(255, 255, 255, 0.94)",
+                  background: "var(--bg-card)",
                   backdropFilter: "blur(28px)",
                   WebkitBackdropFilter: "blur(28px)",
-                  border: "1px solid var(--border-bright)",
-                  boxShadow: theme === "dark"
-                    ? "0 10px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05)"
-                    : "0 10px 40px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.05)",
+                  border: "1px solid var(--border)",
+                  borderTop: "1px solid rgba(0, 212, 255, 0.25)",
+                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255,255,255,0.02)",
                   display: "flex",
                   flexDirection: "column",
                   gap: 12
@@ -1774,15 +1801,26 @@ export default function Home() {
       </nav>
 
       {/* ── Hero Stats ── */}
-      <div style={{ paddingTop: 64, borderBottom: "1px solid var(--border)", background: "var(--hero-bg)", position: "relative" }}>
+      <div style={{ paddingTop: 64, borderBottom: "1px solid var(--border)", background: "var(--hero-bg)", position: "relative", overflow: "hidden" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "36px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 28 }}>
           {/* Headline */}
-          <div>
+          <div style={{ position: "relative" }}>
+            <div style={{
+              position: "absolute",
+              top: "-40%",
+              left: "-20%",
+              width: "140%",
+              height: "180%",
+              background: "radial-gradient(circle, rgba(0,212,255,0.08) 0%, rgba(123,47,247,0.04) 50%, transparent 100%)",
+              filter: "blur(40px)",
+              zIndex: -1,
+              pointerEvents: "none"
+            }} />
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-              <Star size={11} style={{ color: "var(--primary)" }} />
-              <span style={{ fontSize: 11, color: "var(--primary)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>FIFA World Cup 2026 · Prediction Markets</span>
+              <Star size={11} style={{ color: "var(--primary)", fill: "var(--primary)" }} />
+              <span className="font-sans" style={{ fontSize: 11, color: "var(--primary)", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>FIFA World Cup 2026 · Prediction Markets</span>
             </div>
-            <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: "clamp(34px, 4.5vw, 54px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.05, margin: 0 }}>
+            <h1 className="font-serif" style={{ fontSize: "clamp(34px, 4.5vw, 54px)", fontWeight: 400, letterSpacing: "-0.02em", lineHeight: 1.05, margin: 0 }}>
               Bet On-Chain.
               <span className="text-gradient-hero" style={{ display: "block", fontStyle: "italic" }}>
                 Win in USDT.
@@ -1816,6 +1854,31 @@ export default function Home() {
 
       {/* ── Content ── */}
       <main className="main-content">
+        {wallet.isConnected && !usdtLoading && usdtBalance < 0.01 && showSwapWarning && (
+          <div className="swap-warning-banner">
+            <div className="swap-warning-content">
+              <AlertCircle className="swap-warning-icon" size={18} />
+              <span className="swap-warning-text">
+                Please Swap your <strong>OKB</strong> to <strong>USDT</strong> to trade on GoalBet.
+                <a 
+                  href="https://www.okx.com/web3/dex-swap" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="swap-warning-link"
+                >
+                  Swap on OKX DEX <ArrowUpRight size={14} />
+                </a>
+              </span>
+            </div>
+            <button 
+              className="swap-warning-close" 
+              onClick={() => setShowSwapWarning(false)}
+              aria-label="Dismiss warning"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        )}
         {tab === "matches" && <MatchesTab matches={matches} loading={matchesLoading} onBet={openBet} />}
         {tab === "agent" && <AgentTab address={wallet.address} signer={wallet.signer} matches={matches} usdtBalance={usdtBalance} refetchUsdt={refetchUsdt} onNotif={notify} addNotif={addNotification} theme={theme} />}
         {tab === "portfolio" && <PortfolioTab address={wallet.address} signer={wallet.signer} refetchUsdt={refetchUsdt} onNotif={notify} addNotif={addNotification} />}
