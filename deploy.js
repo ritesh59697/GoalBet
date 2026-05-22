@@ -20,7 +20,7 @@ async function main() {
     USDT_ADDRESS = await mockUSDT.getAddress();
     console.log("   MockUSDT deployed to:", USDT_ADDRESS);
   } else if (!USDT_ADDRESS) {
-    USDT_ADDRESS = "0xc946DAf81b08146B1C7A8Da2A851Ddf2B3EAaf85"; // X Layer Mainnet USDT
+    USDT_ADDRESS = "0x1E4a5963aBFD975d8c9021ce480b42188849D41d"; // X Layer Mainnet Legacy USDT
   }
 
   // 1. Deploy BetReceiptNFT

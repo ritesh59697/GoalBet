@@ -13,8 +13,8 @@ const TEAM_RATINGS = {
 
 const RISK_PROFILES = {
   conservative: { minConfidence: 70, maxBetPercent: 0.05, outcomeMultiplier: 0.8 },
-  moderate:     { minConfidence: 55, maxBetPercent: 0.10, outcomeMultiplier: 1.0 },
-  aggressive:   { minConfidence: 40, maxBetPercent: 0.20, outcomeMultiplier: 1.2 },
+  moderate: { minConfidence: 55, maxBetPercent: 0.10, outcomeMultiplier: 1.0 },
+  aggressive: { minConfidence: 40, maxBetPercent: 0.20, outcomeMultiplier: 1.2 },
 };
 
 export async function POST(req) {
@@ -37,10 +37,10 @@ export async function POST(req) {
       return NextResponse.json({ error: "Agent PRIVATE_KEY not configured on server" }, { status: 500 });
     }
 
-    const provider = new ethers.JsonRpcProvider(rpcUrl);
+    const provider = new ethers.JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 });
     const agentWallet = new ethers.Wallet(privateKey, provider);
 
-    const marketAddress = CONTRACT_ADDRESSES.PredictionMarket;
+    const marketAddress = process.env.NEXT_PUBLIC_MARKET_ADDRESS || CONTRACT_ADDRESSES.PredictionMarket;
     const marketContract = new ethers.Contract(marketAddress, PredictionMarketABI, agentWallet);
 
     console.log(`[Agent API] Running cycle for user: ${userAddress} using agent: ${agentWallet.address}`);
@@ -57,10 +57,10 @@ export async function POST(req) {
     const rawBudget = await marketContract.agentBudget(userAddress);
     let userBudget = Number(ethers.formatUnits(rawBudget, 6)); // in USDT (6 decimals)
 
-    if (userBudget < 1) {
+    if (userBudget < 0.1) {
       return NextResponse.json({
         actions: [],
-        message: "Agent stopped: Escrowed budget is below 1 USDT. Please top up your budget."
+        message: "Agent stopped: Escrowed budget is below 0.1 USDT. Please top up your budget."
       });
     }
 
@@ -71,10 +71,10 @@ export async function POST(req) {
     // Analyze each match
     for (let i = 0; i < Number(matchCount); i++) {
       const match = await marketContract.getMatch(i);
-      
+
       // Check status: 0 is MarketStatus.OPEN
-      if (Number(match.status) !== 0) continue; 
-      
+      if (Number(match.status) !== 0) continue;
+
       // Check kickoff time
       const kickoff = Number(match.kickoffTime);
       if (kickoff * 1000 < Date.now()) continue;
@@ -116,14 +116,14 @@ export async function POST(req) {
 
       // Calculate Expected Value (EV)
       const homeEV = (homeWinProb / 100) * oddsHome - 1;
-      const drawEV  = (drawProb / 100) * oddsDraw - 1;
-      const awayEV  = (awayWinProb / 100) * oddsAway - 1;
+      const drawEV = (drawProb / 100) * oddsDraw - 1;
+      const awayEV = (awayWinProb / 100) * oddsAway - 1;
 
       // Select best outcome
       const outcomes = [
         { outcome: 1, ev: homeEV, prob: homeWinProb, label: `${homeTeam} Win` },
-        { outcome: 2, ev: drawEV,  prob: drawProb,    label: "Draw" },
-        { outcome: 3, ev: awayEV,  prob: awayWinProb, label: `${awayTeam} Win` }
+        { outcome: 2, ev: drawEV, prob: drawProb, label: "Draw" },
+        { outcome: 3, ev: awayEV, prob: awayWinProb, label: `${awayTeam} Win` }
       ].sort((a, b) => b.ev - a.ev);
 
       const best = outcomes[0];
@@ -157,7 +157,7 @@ export async function POST(req) {
       try {
         console.log(`[Agent API] Placing bet of ${suggestedAmount} USDT on ${best.label} (Match ${i}) for user ${userAddress}`);
         const amountInUnits = ethers.parseUnits(suggestedAmount.toString(), 6);
-        
+
         const tx = await marketContract.agentPlaceBet(
           userAddress,
           i,
@@ -191,8 +191,8 @@ export async function POST(req) {
 
     return NextResponse.json({
       actions,
-      message: actions.length > 0 
-        ? `Agent cycle executed successfully! Placed ${actions.filter(a => a.type === "BET_PLACED").length} bets.` 
+      message: actions.length > 0
+        ? `Agent cycle executed successfully! Placed ${actions.filter(a => a.type === "BET_PLACED").length} bets.`
         : "Agent cycle executed: analyzed all matches, but no bets met the criteria or bets were already placed."
     });
 

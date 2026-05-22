@@ -13,7 +13,7 @@ export function useUserBets(userAddress) {
     setLoading(true);
 
     try {
-      const provider = new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl);
+      const provider = new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl, undefined, { batchMaxCount: 1 });
       const contract = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, provider);
 
       const matchCount = Number(await contract.getMatchCount());

@@ -17,13 +17,13 @@ const INITIAL_STATE = {
 export function useWallet() {
   const [state, setState] = useState(INITIAL_STATE);
 
-  // ─── Detect provider (OKX Wallet first, then MetaMask) ───────────────────
+  // ─── Detect provider (window.ethereum first as standard, fallback to okxwallet) ───
   const getEthereumProvider = () => {
     if (typeof window === "undefined") return null;
-    // OKX Wallet injects window.okxwallet
-    if (window.okxwallet) return window.okxwallet;
-    // Fallback to MetaMask/window.ethereum
+    // Prioritize standard window.ethereum (active user-preferred wallet e.g. Rabby, MetaMask, OKX)
     if (window.ethereum) return window.ethereum;
+    // Fallback to OKX Wallet specific window.okxwallet if window.ethereum not present
+    if (window.okxwallet) return window.okxwallet;
     return null;
   };
 
@@ -142,8 +142,8 @@ export function useWallet() {
 
     // Auto-reconnect if already connected
     ethereum.request({ method: "eth_accounts" }).then((accounts) => {
-      if (accounts.length) connect();
-    });
+      if (accounts && accounts.length) connect();
+    }).catch(() => {});
 
     return () => {
       ethereum.removeListener("accountsChanged", handleAccountsChanged);

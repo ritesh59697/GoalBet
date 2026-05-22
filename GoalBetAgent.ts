@@ -77,7 +77,7 @@ export class GoalBetAgent {
     marketAddress: string,
     marketABI: any[]
   ) {
-    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+    this.provider = new ethers.JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 });
     this.wallet = new ethers.Wallet(agentPrivateKey, this.provider);
     this.marketABI = marketABI;
     this.marketContract = new ethers.Contract(marketAddress, marketABI, this.wallet);
@@ -204,7 +204,7 @@ export class GoalBetAgent {
     return {
       outcome: best.outcome,
       confidence,
-      suggestedAmount: Math.max(1, suggestedAmount), // min 1 USDT
+      suggestedAmount: Math.max(0.1, suggestedAmount), // min 0.1 USDT
       reasoning,
     };
   }
@@ -229,7 +229,7 @@ export class GoalBetAgent {
     }
 
     // Skip if suggested amount too low
-    if (recommendation.suggestedAmount < 1) {
+    if (recommendation.suggestedAmount < 0.1) {
       return {
         type: "SKIPPED",
         matchIndex,

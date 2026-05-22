@@ -27,7 +27,7 @@ const TEAM_RATINGS = {
 
 export class GoalBetAgent {
   constructor(rpcUrl, agentPrivateKey, marketAddress, marketABI) {
-    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+    this.provider = new ethers.JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 });
     this.wallet = new ethers.Wallet(agentPrivateKey, this.provider);
     this.marketABI = marketABI;
     this.marketContract = new ethers.Contract(marketAddress, marketABI, this.wallet);
@@ -129,7 +129,7 @@ export class GoalBetAgent {
     return {
       outcome: best.outcome,
       confidence,
-      suggestedAmount: Math.max(1, suggestedAmount),
+      suggestedAmount: Math.max(0.1, suggestedAmount),
       reasoning,
     };
   }
@@ -149,7 +149,7 @@ export class GoalBetAgent {
       };
     }
 
-    if (recommendation.suggestedAmount < 1) {
+    if (recommendation.suggestedAmount < 0.1) {
       return {
         type: "SKIPPED",
         matchIndex,

@@ -14,7 +14,7 @@ export function useMatches() {
     setLoading(true);
     setError(null);
     try {
-      const provider = new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl);
+      const provider = new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl, undefined, { batchMaxCount: 1 });
       const contract = new ethers.Contract(
         CONTRACTS.PREDICTION_MARKET,
         PREDICTION_MARKET_ABI,

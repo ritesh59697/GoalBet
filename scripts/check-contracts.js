@@ -1,8 +1,8 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-  const usdtAddr = "0xc946DAf81b08146B1C7A8Da2A851Ddf2B3EAaf85";
-  const marketAddr = "0x628F7EB99e797FC81e93Bb322FEB82572E275D34";
+  const usdtAddr = process.env.NEXT_PUBLIC_USDT_ADDRESS || "0x1E4a5963aBFD975d8c9021ce480b42188849D41d";
+  const marketAddr = process.env.NEXT_PUBLIC_MARKET_ADDRESS || "0xe416Dc382258bFaaAfD278bAE929e53d00b4c122";
   
   const code = await ethers.provider.getCode(usdtAddr);
   console.log("USDT Code Length:", code.length);

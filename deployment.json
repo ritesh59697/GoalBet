@@ -1,6 +1,6 @@
 {
-  "marketAddress": "0x2373aE9BED8D1E42a7b5CA8B8476161af2236D3e",
-  "nftAddress": "0xb6bfaEbcD8379EBb11471576F5A1286634544464",
-  "usdtAddress": "0xe416Dc382258bFaaAfD278bAE929e53d00b4c122",
-  "network": "xlayerTestnet"
+  "marketAddress": "0x4EA62b23DE3c65b07B90D002589dC8141f9f7807",
+  "nftAddress": "0x6Cb3f29e8EC1a4D816CB931749Ed65C7D5d4CcD5",
+  "usdtAddress": "0x1E4a5963aBFD975d8c9021ce480b42188849D41d",
+  "network": "xlayer"
 }

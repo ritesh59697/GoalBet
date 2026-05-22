@@ -21,8 +21,8 @@ export function useBetting(signer) {
     if (allowance >= amountWei) return; // Already approved
 
     setStatus("approving");
-    // Approve max to avoid repeated approvals
-    const tx = await usdt.approve(CONTRACTS.PREDICTION_MARKET, ethers.MaxUint256);
+    // Approve exact amount
+    const tx = await usdt.approve(CONTRACTS.PREDICTION_MARKET, amountWei);
     await tx.wait();
   }, [signer]);
 
@@ -119,7 +119,9 @@ export function useBetting(signer) {
   ) => {
     try {
       const provider = signer?.provider || new ethers.JsonRpcProvider(
-        process.env.NEXT_PUBLIC_RPC_URL || "https://rpc.xlayer.tech"
+        process.env.NEXT_PUBLIC_RPC_URL || "https://rpc.xlayer.tech",
+        undefined,
+        { batchMaxCount: 1 }
       );
       const market = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, provider);
       const amountWei = ethers.parseUnits(amountUsdt.toString(), USDT_DECIMALS);

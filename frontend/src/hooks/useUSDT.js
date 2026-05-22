@@ -12,7 +12,7 @@ export function useUSDT(userAddress, provider) {
     if (!userAddress) { setBalance(0); setAllowance(0); return; }
     setLoading(true);
     try {
-      const p = provider || new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl);
+      const p = provider || new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl, undefined, { batchMaxCount: 1 });
       const usdt = new ethers.Contract(CONTRACTS.USDT, ERC20_ABI, p);
       const [bal, allow] = await Promise.all([
         usdt.balanceOf(userAddress),

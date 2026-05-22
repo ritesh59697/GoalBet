@@ -28,11 +28,11 @@ export const CONTRACTS = {
   PREDICTION_MARKET: process.env.NEXT_PUBLIC_MARKET_ADDRESS,
   BET_RECEIPT_NFT:   process.env.NEXT_PUBLIC_NFT_ADDRESS,
   USDT:              process.env.NEXT_PUBLIC_USDT_ADDRESS,
-  // X Layer Mainnet USDT: 0xc946DAf81b08146B1C7A8Da2A851Ddf2B3EAaf85
+  // X Layer Mainnet USDT: 0x1E4a5963aBFD975d8c9021ce480b42188849D41d
 };
 
 // ─── App Constants ────────────────────────────────────────────────────────────
-export const MIN_BET_USDT  = 1;
+export const MIN_BET_USDT  = 0.1;
 export const MAX_BET_USDT  = 1000;
 export const USDT_DECIMALS = 6;
 export const PLATFORM_FEE  = 0.02; // 2%

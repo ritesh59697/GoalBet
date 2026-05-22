@@ -230,9 +230,9 @@ function MatchCard({ match, onBet }) {
 }
 
 // ─── Bet Modal ────────────────────────────────────────────────────────────────
-function BetModal({ match, initOutcome, onClose, onSuccess, signer }) {
+function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
   const [outcome, setOutcome] = useState(initOutcome || null);
-  const [amount, setAmount]   = useState(50);
+  const [amount, setAmount]   = useState("50");
   const [potentialPayout, setPotentialPayout] = useState(0);
 
   const { status, error, lastResult, placeBet, simulatePayout, reset } = useBetting(signer);
@@ -241,12 +241,13 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer }) {
   const OPT_LABELS = { 1:"Home Win", 2:"Draw", 3:"Away Win" };
 
   useEffect(() => {
-    if (outcome && amount > 0) {
-      simulatePayout(match.index, outcome, amount).then(val => {
+    const numAmount = parseFloat(amount) || 0;
+    if (outcome && numAmount > 0) {
+      simulatePayout(match.index, outcome, numAmount).then(val => {
         setPotentialPayout(val);
       }).catch(err => {
         console.error("Payout simulation failed:", err);
-        setPotentialPayout(amount * (odds[outcome] || 1));
+        setPotentialPayout(numAmount * (odds[outcome] || 1));
       });
     } else {
       setPotentialPayout(0);
@@ -259,13 +260,15 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer }) {
     }
   }, [status, lastResult, onSuccess]);
 
+  const numAmount = parseFloat(amount) || 0;
   const place = async () => {
     if (!outcome) return;
-    await placeBet(match.index, outcome, amount);
+    if (numAmount <= 0) return;
+    await placeBet(match.index, outcome, numAmount);
   };
 
-  const payout = potentialPayout || (amount * (odds[outcome] || 1));
-  const profit = payout > amount ? payout - amount : 0;
+  const payout = potentialPayout || (numAmount * (odds[outcome] || 1));
+  const profit = payout > numAmount ? payout - numAmount : 0;
 
   const homeImg = TEAM_IMAGES[match.homeTeam];
   const awayImg = TEAM_IMAGES[match.awayTeam];
@@ -331,21 +334,24 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer }) {
             <div style={{ marginBottom:18 }}>
               <div style={{ fontSize:11, fontWeight:600, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:9 }}>Stake Amount (USDT)</div>
               <div style={{ display:"flex", gap:6, marginBottom:9 }}>
-                {[10,25,50,100,250].map(a => (
-                  <button key={a} onClick={() => setAmount(a)} style={{
-                    flex:1, padding:"7px 0", borderRadius:6, fontSize:12, fontWeight:600,
-                    border:`1px solid ${amount===a?"var(--primary)":"var(--border)"}`,
-                    background: amount===a ? "var(--btn-amount-bg)" : "transparent",
-                    color: amount===a ? "var(--primary)" : "var(--text-muted)",
-                    cursor:"pointer", transition:"all 0.15s"
-                  }}>${a}</button>
-                ))}
+                {[10,25,50,100,250].map(a => {
+                  const isActive = parseFloat(amount) === a;
+                  return (
+                    <button key={a} onClick={() => setAmount(a.toString())} style={{
+                      flex:1, padding:"7px 0", borderRadius:6, fontSize:12, fontWeight:600,
+                      border:`1px solid ${isActive?"var(--primary)":"var(--border)"}`,
+                      background: isActive ? "var(--btn-amount-bg)" : "transparent",
+                      color: isActive ? "var(--primary)" : "var(--text-muted)",
+                      cursor:"pointer", transition:"all 0.15s"
+                    }}>${a}</button>
+                  );
+                })}
               </div>
               <div style={{ position:"relative" }}>
                 <Coins size={14} style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:"var(--text-muted)" }} />
                 <input
-                  type="number" value={amount} min={1}
-                  onChange={e => setAmount(Number(e.target.value))}
+                  type="number" value={amount} min={0.1} step={0.1}
+                  onChange={e => setAmount(e.target.value)}
                   className="input"
                   style={{ paddingLeft:34, paddingRight:52 }}
                 />
@@ -436,9 +442,9 @@ function MatchesTab({ matches = [], loading, onBet }) {
 }
 
 // ─── AI Agent Tab ─────────────────────────────────────────────────────────────
-function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif }) {
+function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif, theme }) {
   const [risk, setRisk]       = useState("moderate");
-  const [budget, setBudget]   = useState(100);
+  const [budget, setBudget]   = useState("100");
   const [analysing, setAn]    = useState(false);
   const [analyses, setAns]    = useState([]);
   const [runningCycle, setRunningCycle] = useState(false);
@@ -491,7 +497,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif 
     }
     setAn(true); addLog("[Scan] Running EV analysis across all markets…", "#a78bfa");
     try {
-      const currentBudget = isAuthorized ? remainingBudget : budget;
+      const currentBudget = isAuthorized ? remainingBudget : (parseFloat(budget) || 0);
       const results = await Promise.all(matches.map(async m => {
         const r = await fetch("/api/agent-analysis", {
           method:"POST", headers:{ "Content-Type":"application/json" },
@@ -677,7 +683,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif 
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
             <span style={{ fontSize:11, fontWeight:700, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.1em" }}>Escrow Budget</span>
             {!isAuthorized && (
-              <button onClick={() => setBudget(usdtBalance)} style={{
+              <button onClick={() => setBudget(usdtBalance.toString())} style={{
                 fontSize:11, color:"var(--primary)", background:"var(--primary-alpha-bg)",
                 border:"1px solid var(--primary-alpha-border)", cursor:"pointer",
                 fontWeight:700, padding:"3px 10px", borderRadius:5, letterSpacing:"0.04em"
@@ -700,7 +706,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif 
           ) : (
             <div style={{ position:"relative" }}>
               <Wallet size={14} style={{ position:"absolute", left:13, top:"50%", transform:"translateY(-50%)", color:"var(--text-muted)" }} />
-              <input type="number" value={budget} min={1} onChange={e => setBudget(Number(e.target.value))}
+              <input type="number" value={budget} min={0.1} step={0.1} onChange={e => setBudget(e.target.value)}
                 className="input" style={{ paddingLeft:36, paddingRight:60, height:46, fontSize:15 }} />
               <span style={{ position:"absolute", right:14, top:"50%", transform:"translateY(-50%)", fontSize:12, fontWeight:700, color:"var(--primary)", fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.05em" }}>USDT</span>
             </div>
@@ -822,7 +828,9 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif 
               className="btn-primary"
               onClick={async () => {
                 if (!address) { onNotif("Connect your wallet first!", "error"); return; }
-                const success = await authorizeAgent(budget);
+                const numericBudget = parseFloat(budget) || 0;
+                if (numericBudget <= 0) { onNotif("Enter a valid budget amount", "error"); return; }
+                const success = await authorizeAgent(numericBudget);
                 if (success) {
                   onNotif(`Agent active with $${budget} USDT!`, "success");
                   refetchUsdt();
@@ -1313,7 +1321,7 @@ export default function Home() {
       {/* ── Content ── */}
       <main style={{ width:"100%", maxWidth:1400, margin:"0 auto", padding:"32px 32px 72px", flex:1 }}>
         {tab==="matches"     && <MatchesTab   matches={matches} loading={matchesLoading} onBet={openBet} />}
-        {tab==="agent"       && <AgentTab     address={wallet.address} signer={wallet.signer} matches={matches} usdtBalance={usdtBalance} refetchUsdt={refetchUsdt} onNotif={notify} />}
+        {tab==="agent"       && <AgentTab     address={wallet.address} signer={wallet.signer} matches={matches} usdtBalance={usdtBalance} refetchUsdt={refetchUsdt} onNotif={notify} theme={theme} />}
         {tab==="portfolio"   && <PortfolioTab address={wallet.address} signer={wallet.signer} refetchUsdt={refetchUsdt} onNotif={notify} />}
         {tab==="leaderboard" && <LeaderboardTab />}
       </main>
@@ -1341,6 +1349,7 @@ export default function Home() {
           initOutcome={modal.outcome}
           onClose={() => setModal(null)}
           signer={wallet.signer}
+          theme={theme}
           onSuccess={result => {
             notify(`Bet placed! TX: ${result.txHash.slice(0,12)}…`, "success");
             refetchMatches();

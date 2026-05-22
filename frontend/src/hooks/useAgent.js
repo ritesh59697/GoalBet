@@ -24,7 +24,7 @@ export function useAgent(
     setState(s => ({ ...s, loading: true }));
 
     try {
-      const provider = new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl);
+      const provider = new ethers.JsonRpcProvider(ACTIVE_NETWORK.rpcUrl, undefined, { batchMaxCount: 1 });
       const contract = new ethers.Contract(CONTRACTS.PREDICTION_MARKET, PREDICTION_MARKET_ABI, provider);
 
       const [agentAddr, budget] = await Promise.all([
@@ -67,7 +67,7 @@ export function useAgent(
       const allowance = await usdt.allowance(userAddr, CONTRACTS.PREDICTION_MARKET);
 
       if (allowance < budgetWei) {
-        const approveTx = await usdt.approve(CONTRACTS.PREDICTION_MARKET, ethers.MaxUint256);
+        const approveTx = await usdt.approve(CONTRACTS.PREDICTION_MARKET, budgetWei);
         await approveTx.wait();
       }
 
@@ -111,7 +111,7 @@ export function useAgent(
       const userAddr = await signer.getAddress();
       const allowance = await usdt.allowance(userAddr, CONTRACTS.PREDICTION_MARKET);
       if (allowance < amountWei) {
-        const tx = await usdt.approve(CONTRACTS.PREDICTION_MARKET, ethers.MaxUint256);
+        const tx = await usdt.approve(CONTRACTS.PREDICTION_MARKET, amountWei);
         await tx.wait();
       }
 
