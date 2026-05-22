@@ -8,8 +8,8 @@ export function useMatches() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchMatches = useCallback(async () => {
-    setLoading(true);
+  const fetchMatches = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       await runWithRpcFallback(async (provider) => {
@@ -79,8 +79,8 @@ export function useMatches() {
 
   useEffect(() => {
     fetchMatches();
-    // Refresh odds every 30s
-    const interval = setInterval(fetchMatches, 30_000);
+    // Refresh odds every 30s silently
+    const interval = setInterval(() => fetchMatches(true), 30_000);
     return () => clearInterval(interval);
   }, [fetchMatches]);
 

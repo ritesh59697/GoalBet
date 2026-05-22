@@ -1456,10 +1456,10 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
 // ─── Leaderboard Tab ──────────────────────────────────────────────────────────
 function LeaderboardTab() {
   return (
-    <div className="font-sans" style={{ maxWidth: 700 }}>
+    <div className="font-sans" style={{ maxWidth: 800, margin: "0 auto" }}>
       <div style={{ marginBottom: 28 }}>
         <h1 className="font-serif" style={{ fontSize: 28, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 6, display: "flex", alignItems: "center", gap: 12 }}>
-          <Trophy size={24} style={{ color: "var(--gold)" }} /> Global Leaderboard
+          <Trophy size={24} style={{ color: "var(--gold)" }} />Global Leaderboard
         </h1>
         <p style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>Ranked by on-chain USDT profit · World Cup 2026 · X Layer</p>
       </div>
