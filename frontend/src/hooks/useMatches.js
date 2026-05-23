@@ -79,8 +79,8 @@ export function useMatches() {
 
   useEffect(() => {
     fetchMatches();
-    // Refresh odds every 30s silently
-    const interval = setInterval(() => fetchMatches(true), 30_000);
+    // Refresh odds every 60s silently
+    const interval = setInterval(() => fetchMatches(true), 60_000);
     return () => clearInterval(interval);
   }, [fetchMatches]);
 

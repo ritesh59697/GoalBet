@@ -48,7 +48,7 @@ export function useUSDT(userAddress, provider) {
 
   useEffect(() => {
     fetchBalances();
-    const interval = setInterval(fetchBalances, 15_000);
+    const interval = setInterval(fetchBalances, 30_000);
     return () => clearInterval(interval);
   }, [fetchBalances]);
 

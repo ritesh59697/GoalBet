@@ -26,12 +26,17 @@ export const ACTIVE_NETWORK = IS_TESTNET ? XLAYER_TESTNET : XLAYER_MAINNET;
 
 const RPC_ENDPOINTS = IS_TESTNET 
   ? ["https://testrpc.xlayer.tech", "https://xlayertestrpc.okx.com/terigon"]
-  : ["https://rpc.xlayer.tech", "https://xlayerrpc.okx.com", "https://x-layer.drpc.org"];
+  : ["https://rpc.xlayer.tech", "https://xlayerrpc.okx.com", "https://xlayer.drpc.org"];
 
 let activeRpcUrl = ACTIVE_NETWORK.rpcUrl;
 
 export function getRpcProvider() {
-  return new ethers.JsonRpcProvider(activeRpcUrl, undefined, { batchMaxCount: 1 });
+  let url = activeRpcUrl;
+  if (typeof window !== "undefined") {
+    url = `${window.location.origin}/api/rpc`;
+  }
+  console.log("getRpcProvider: url =", url, "activeRpcUrl =", activeRpcUrl, "window =", typeof window !== "undefined" ? "defined" : "undefined");
+  return new ethers.JsonRpcProvider(url, undefined, { batchMaxCount: 1 });
 }
 
 export function switchRpc() {

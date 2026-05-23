@@ -131,6 +131,7 @@ export function useUserBets(userAddress) {
                 claimed: bet.claimed,
                 isAgentBet: bet.isAgentBet,
                 timestamp: Number(bet.timestamp) * 1000,
+                kickoffTime: Number(matchData.kickoffTime) * 1000,
                 matchStatus,
                 matchResult,
                 isWinner,

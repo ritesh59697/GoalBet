@@ -1377,6 +1377,25 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
                         <span style={{ fontSize: 12, color: "var(--primary)" }}>{bet.outcomeName}</span>
                         <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace" }}>@ {estMultiplier}x</span>
                         {bet.isAgentBet && <span className="badge badge-agent"><Bot size={9} />Agent</span>}
+                        {bet.kickoffTime && (
+                          <>
+                            <div style={{ width: 1, height: 12, background: "var(--border)", margin: "0 2px" }} />
+                            <span style={{ fontSize: 11, color: "var(--text-muted)", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              <Clock size={10} />
+                              {bet.matchStatus === 0 ? (
+                                bet.kickoffTime > Date.now() ? (
+                                  `Starts in ${timeUntil(bet.kickoffTime)}`
+                                ) : (
+                                  "In Progress (Live Now)"
+                                )
+                              ) : bet.matchStatus === 1 ? (
+                                "Locked (Announcing soon)"
+                              ) : (
+                                "Ended"
+                              )}
+                            </span>
+                          </>
+                        )}
                         {bet.txHash && (
                           <a
                             href={`${ACTIVE_NETWORK.explorerUrl}/tx/${bet.txHash}`}
