@@ -299,7 +299,7 @@ function BetModal({ match, initOutcome, onClose, onSuccess, signer, theme }) {
 
   return (
     <div style={{
-      position: "fixed", inset: 0, zIndex: 1000,
+      position: "fixed", inset: 0, zIndex: 2000,
       background: theme === "dark" ? "rgba(2,2,3,0.85)" : "rgba(15, 23, 42, 0.3)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: 16
     }} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -758,42 +758,111 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
       });
       const data = await res.json();
       if (data.success) {
-        addLog(`[Summary] Bets Placed: ${data.summary.betsPlaced}, Skipped: ${data.summary.skipped}, Errors: ${data.summary.errors}`, "var(--terminal-success)");
+        const queue = [];
+        
+        // Initial agent status checks in log
+        queue.push({ text: "[Scan] Starting analysis of active prediction markets...", col: "var(--terminal-info)" });
+        
         if (data.actions && data.actions.length > 0) {
           data.actions.forEach(act => {
             if (act.type === "BET_PLACED") {
-              addLog(`[Bet Placed] Match ${act.matchIndex}: Outcome ${act.outcome} | Amount: $${act.amount} USDT | TX: ${act.txHash.slice(0, 12)}...`, "var(--terminal-success)", act.txHash);
               const outcomeLabel = { 1: "Home Win", 2: "Draw", 3: "Away Win" }[act.outcome] || "Unknown";
-              addNotif(
-                "Agent Bet Placed",
-                `AI Betting Agent autonomously placed $${act.amount} USDT on ${outcomeLabel} for match index ${act.matchIndex}`,
-                act.txHash
-              );
+              queue.push({
+                text: `[Analysis] Match ${act.matchIndex}: High EV detected. Confidence ${act.confidence || 75}%.`,
+                col: "var(--terminal-info)"
+              });
+              queue.push({
+                text: `[Bet Placed] Placing $${act.amount} USDT on ${outcomeLabel}...`,
+                col: "var(--terminal-success)"
+              });
+              queue.push({
+                text: `[Success] TX Confirmed: ${act.txHash.slice(0, 12)}...`,
+                col: "var(--terminal-success)",
+                txHash: act.txHash,
+                onPrint: () => {
+                  addNotif(
+                    "Agent Bet Placed",
+                    `AI Betting Agent autonomously placed $${act.amount} USDT on ${outcomeLabel} for match index ${act.matchIndex}`,
+                    act.txHash
+                  );
+                }
+              });
             } else if (act.type === "SKIPPED") {
-              addLog(`[Skipped] Match ${act.matchIndex}: ${act.reasoning}`, "var(--terminal-system)");
+              queue.push({
+                text: `[Analysis] Match ${act.matchIndex}: Evaluating odds...`,
+                col: "var(--terminal-info)"
+              });
+              queue.push({
+                text: `[Skipped] Match ${act.matchIndex}: ${act.reasoning}`,
+                col: "var(--terminal-system)"
+              });
             } else if (act.type === "ERROR") {
-              addLog(`[Error] Match ${act.matchIndex}: ${act.reasoning}`, "var(--terminal-danger)");
+              queue.push({
+                text: `[Error] Match ${act.matchIndex}: ${act.reasoning}`,
+                col: "var(--terminal-danger)"
+              });
             }
           });
         } else {
-          addLog("[Cycle] No actions taken by agent.", "var(--terminal-system)");
+          queue.push({ text: "[Cycle] No high EV opportunities found. Skipping trade.", col: "var(--terminal-system)" });
         }
-        addNotif(
-          "Agent Run Completed",
-          `Agent cycle completed. Placed: ${data.summary.betsPlaced}, Skipped: ${data.summary.skipped}`,
-          null
-        );
-        refetchAgent();
-        refetchUsdt();
-        onNotif("Agent cycle execution completed successfully!", "success");
+        
+        queue.push({
+          text: `[Summary] Bets Placed: ${data.summary.betsPlaced}, Skipped: ${data.summary.skipped}, Errors: ${data.summary.errors}`,
+          col: "var(--terminal-success)"
+        });
+        
+        queue.push({
+          text: "[Success] Agent cycle execution completed successfully.",
+          col: "var(--terminal-success)",
+          onPrint: () => {
+            addNotif(
+              "Agent Run Completed",
+              `Agent cycle completed. Placed: ${data.summary.betsPlaced}, Skipped: ${data.summary.skipped}`,
+              null
+            );
+            refetchAgent();
+            refetchUsdt();
+            onNotif("Agent cycle execution completed successfully!", "success");
+          }
+        });
+
+        // Run the log sequence simulation
+        let logIndex = 0;
+        const printNextLog = () => {
+          if (logIndex < queue.length) {
+            const item = queue[logIndex];
+            addLog(item.text, item.col, item.txHash);
+            if (item.onPrint) item.onPrint();
+            logIndex++;
+
+            // Adaptive styling delay for premium feeling
+            let delay = 600;
+            if (item.text.includes("[Scan]") || item.text.includes("[Analysis]") || item.text.includes("Evaluating")) {
+              delay = 500;
+            } else if (item.text.includes("[Skipped]")) {
+              delay = 400;
+            } else if (item.text.includes("[Bet Placed]")) {
+              delay = 900;
+            } else if (item.text.includes("TX Confirmed")) {
+              delay = 1400; // Simulated blockchain confirmation wait time
+            }
+
+            setTimeout(printNextLog, delay);
+          } else {
+            setRunningCycle(false);
+          }
+        };
+        printNextLog();
+
       } else {
         addLog(`[Error] Agent cycle failed: ${data.error}`, "var(--terminal-danger)");
         onNotif(`Agent cycle failed: ${data.error}`, "error");
+        setRunningCycle(false);
       }
     } catch (e) {
       addLog(`[Error] Network error during execution: ${e.message}`, "var(--terminal-danger)");
       onNotif("Network error during agent execution.", "error");
-    } finally {
       setRunningCycle(false);
     }
   };

@@ -42,7 +42,7 @@ html {
   --radius-sm:       12px;
   --radius-xs:       8px;
 
-  --navbar-bg:       rgba(2, 2, 3, 0.85);
+  --navbar-bg:       rgba(2, 2, 3, 0.95);
   --navbar-border:   rgba(255, 255, 255, 0.04);
   --navbar-shadow:   0 8px 32px rgba(0, 0, 0, 0.8);
 
@@ -138,7 +138,7 @@ html {
   --text-secondary:  #475569; /* Slate-600 secondary text */
   --text-muted:      #64748b; /* Slate-500 muted text */
   
-  --navbar-bg:       rgba(255, 255, 255, 0.8);
+  --navbar-bg:       rgba(255, 255, 255, 0.96);
   --navbar-border:   rgba(15, 23, 42, 0.06);
   --navbar-shadow:   0 8px 32px rgba(15, 23, 42, 0.04);
   
@@ -653,7 +653,7 @@ body::after {
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
-  z-index: 100;
+  z-index: 1050;
   border-bottom: 1px solid var(--navbar-border);
   box-shadow: var(--navbar-shadow);
   background: var(--navbar-bg);
@@ -792,7 +792,7 @@ body::after {
   justify-content: space-around;
   align-items: center;
   padding-bottom: env(safe-area-inset-bottom);
-  z-index: 1000;
+  z-index: 1050;
 }
 
 .mobile-bottom-nav-item {
