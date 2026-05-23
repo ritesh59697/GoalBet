@@ -28,7 +28,7 @@ html {
   --purple: #7b2ff7;
   /* Vibrant Purple */
   --purple-glow: rgba(123, 47, 247, 0.35);
-  --green: #00ff88;
+  --green: #10b981;
   /* Cyber Green */
   --red: #ff4757;
   /* Neon Red */
@@ -77,9 +77,9 @@ html {
   --purple-alpha-bg: rgba(123, 47, 247, 0.06);
   --purple-alpha-border: rgba(123, 47, 247, 0.25);
 
-  --success-bg: rgba(0, 255, 136, 0.04);
-  --success-border: rgba(0, 255, 136, 0.15);
-  --success-text: #00ff88;
+  --success-bg: rgba(16, 185, 129, 0.06);
+  --success-border: rgba(16, 185, 129, 0.22);
+  --success-text: #34d399;
 
   --danger-bg: rgba(255, 71, 87, 0.05);
   --danger-border: rgba(255, 71, 87, 0.18);
@@ -672,6 +672,21 @@ body::after {
 .terminal-line {
   animation: fadeSlideIn 0.35s ease forwards;
   opacity: 0;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  transition: background 0.2s ease;
+}
+
+.terminal-line:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+[data-theme="light"] .terminal-line:hover {
+  background: rgba(15, 23, 42, 0.025);
 }
 
 @keyframes fadeSlideIn {
@@ -1324,5 +1339,244 @@ body::after {
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+/* ── Bet Modal Premium Refinements ── */
+.bet-outcome-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.bet-outcome-btn {
+  padding: 12px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bet-outcome-btn:hover:not(:disabled) {
+  border-color: var(--border-bright);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="light"] .bet-outcome-btn:hover:not(:disabled) {
+  background: rgba(15, 23, 42, 0.02);
+}
+
+.bet-outcome-btn.active-home {
+  border-color: var(--primary-alpha-border);
+  background: var(--primary-alpha-bg);
+  box-shadow: var(--vs-badge-shadow);
+}
+
+.bet-outcome-btn.active-draw {
+  border-color: var(--border-bright);
+  background: var(--pool-track-bg);
+}
+
+.bet-outcome-btn.active-away {
+  border-color: var(--purple-alpha-border);
+  background: var(--purple-alpha-bg);
+  box-shadow: 0 0 12px rgba(123, 47, 247, 0.2);
+}
+
+.bet-amount-grid {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.bet-amount-btn {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bet-amount-btn:hover:not(:disabled) {
+  border-color: var(--border-bright);
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+[data-theme="light"] .bet-amount-btn:hover:not(:disabled) {
+  background: rgba(15, 23, 42, 0.02);
+}
+
+.bet-amount-btn.active {
+  border-color: var(--primary);
+  background: var(--btn-amount-bg);
+  color: var(--primary);
+}
+
+.bet-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.bet-input-wrapper .input {
+  border-radius: var(--radius-xs);
+  height: 44px;
+  padding-left: 36px;
+  padding-right: 56px;
+  font-size: 14px;
+}
+
+.bet-input-icon {
+  position: absolute;
+  left: 13px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.bet-input-suffix {
+  position: absolute;
+  right: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  pointer-events: none;
+}
+
+/* ── Resolved Outcome Styling (Grading) ── */
+.odds-btn.outcome-won {
+  opacity: 1 !important;
+  border: 1px solid var(--success-border) !important;
+  border-top-color: var(--success-border) !important;
+  background: var(--success-bg) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.02) !important;
+}
+
+[data-theme="light"] .odds-btn.outcome-won {
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.odds-btn.outcome-won .odds-label {
+  color: var(--success-text) !important;
+}
+
+.odds-btn.outcome-won .odds-value {
+  color: var(--success-text) !important;
+}
+
+.odds-btn.outcome-lost {
+  opacity: 0.22 !important;
+  /* Slightly more faded to emphasize the winning choice */
+  border-color: var(--border) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.odds-btn .winner-badge {
+  font-size: 7.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--success-text);
+  margin-top: 2px;
+  background: var(--success-bg);
+  padding: 1.5px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--success-border);
+  line-height: 1;
+}
+
+/* ── Skeleton Loaders ── */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton-pulse {
+  background: linear-gradient(90deg,
+      var(--border) 25%,
+      var(--border-bright) 50%,
+      var(--border) 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.6s infinite linear;
+  border-radius: 6px;
+}
+
+[data-theme="light"] .skeleton-pulse {
+  background: linear-gradient(90deg,
+      rgba(15, 23, 42, 0.06) 25%,
+      rgba(15, 23, 42, 0.12) 50%,
+      rgba(15, 23, 42, 0.06) 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.6s infinite linear;
+}
+
+/* ── Confetti Fall ── */
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* ── Hero stat value color override ── */
+.hero-stat-item .hero-stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
+/* ── Odds badge color improvements ── */
+.odds-btn-home {
+  border-bottom: 2px solid transparent;
+}
+
+.odds-btn-home:hover:not(:disabled) {
+  border-bottom-color: rgba(0, 212, 255, 0.5);
+}
+
+.odds-btn-away {
+  border-bottom: 2px solid transparent;
+}
+
+.odds-btn-away:hover:not(:disabled) {
+  border-bottom-color: rgba(123, 47, 247, 0.5);
+}
+
+/* ── Leaderboard podium order on mobile ── */
+@media (max-width: 600px) {
+  .leaderboard-podium {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Match card mobile stacking ── */
+@media (max-width: 480px) {
+  .match-grid {
+    grid-template-columns: 1fr !important;
   }
 }
