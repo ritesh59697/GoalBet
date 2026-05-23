@@ -1186,7 +1186,7 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
         <div style={{ height: 1, background: "var(--border-bright)", marginBottom: 20 }} />
 
         {/* Terminal — flex:1 fills remaining height */}
-        <div ref={logRef} className="terminal" style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+        <div ref={logRef} className="terminal" style={{ flex: 1, minHeight: 0, maxHeight: 440, overflowY: "auto" }}>
           {logs.map((l, i) => (
             <div key={i} className="terminal-line" style={{ color: l.col || "var(--text-secondary)", animationDelay: `${i * 0.04}s` }}>
               <span style={{ color: "var(--text-muted)", marginRight: 8, userSelect: "none", fontSize: 10 }}>›</span>
