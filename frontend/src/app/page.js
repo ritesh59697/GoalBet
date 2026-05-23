@@ -1325,9 +1325,36 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
             { label: "Profit / Loss", value: `${totalPnl >= 0 ? "+" : ""}$${fmt(totalPnl)}`, icon: <TrendingUp size={16} />, color: totalPnl >= 0 ? "var(--green)" : "var(--red)" },
             { label: "Claimable", value: `$${fmt(claimable)}`, icon: <Unlock size={16} />, color: "var(--gold)" },
           ].map(s => (
-            <div key={s.label} className="stat-card" style={{ background: "var(--card-header-bg)", border: "1px solid var(--border)", borderRadius: 10, padding: "16px 18px" }}>
-              <div className="font-sans" style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6, color: s.color }}>{s.icon}<span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{s.label}</span></div>
-              <div className="font-mono" style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.5, color: s.color }}>{s.value}</div>
+            <div key={s.label} className="stat-card" style={{ 
+              background: "var(--bg-card)", 
+              border: "1px solid var(--border)", 
+              borderTop: "1px solid var(--card-border-top)",
+              borderRadius: 12, 
+              padding: "20px 24px",
+              position: "relative",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              textAlign: "left"
+            }}>
+              <div style={{
+                position: "absolute",
+                top: 0, left: 0, right: 0, height: 2,
+                background: `linear-gradient(90deg, ${s.color}, transparent)`
+              }} />
+              <div className="font-sans" style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "space-between", 
+                width: "100%",
+                marginBottom: 10, 
+                color: "var(--text-secondary)"
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{s.label}</span>
+                <span style={{ color: s.color }}>{s.icon}</span>
+              </div>
+              <div className="font-mono" style={{ fontSize: 24, fontWeight: 800, letterSpacing: -0.8, color: s.color }}>{s.value}</div>
             </div>
           ))}
         </div>
@@ -1735,11 +1762,10 @@ export default function Home() {
           </div>
 
           {/* Desktop tabs */}
-          <div className="desktop-only" style={{ display: "flex", gap: 0, height: 60, alignItems: "center" }}>
+          <div className="desktop-only" style={{ display: "flex", gap: 4, alignItems: "center" }}>
             {TABS.map(t => (
               <button key={t.id} onClick={() => setTab(t.id)}
-                className={`tab-item ${tab === t.id ? "active" : ""}`}
-                style={{ height: "100%", borderRadius: 0 }}>
+                className={`tab-item ${tab === t.id ? "active" : ""}`}>
                 {t.icon}{t.label}
               </button>
             ))}
@@ -1919,21 +1945,31 @@ export default function Home() {
           {/* Stats */}
           <div className="hero-stats-container">
             {[
-              { label: "Total Pool", value: `$${fmtK(totalPool)}`, icon: <Coins size={13} /> },
-              { label: "Open Markets", value: `${matches ? matches.filter(m => m.status === 0).length : 0}`, icon: <Activity size={13} /> },
-              { label: "Blockchain", value: "X Layer", icon: <Globe size={13} /> },
-              { label: "Event", value: "X Cup 2026", icon: <Trophy size={13} /> },
+              { label: "Total Pool", value: `$${fmtK(totalPool)}`, icon: <Coins size={14} />, color: "var(--primary)" },
+              { label: "Open Markets", value: `${matches ? matches.filter(m => m.status === 0).length : 0}`, icon: <Activity size={14} />, color: "var(--purple)" },
+              { label: "Blockchain", value: "X Layer", icon: <Globe size={14} />, color: "var(--primary)" },
+              { label: "Event", value: "X Cup 2026", icon: <Trophy size={14} />, color: "var(--purple)" },
             ].map((s, i) => (
-              <div key={s.label} className="hero-stat-item">
+              <div key={s.label} className="hero-stat-item" style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                textAlign: "left",
+                padding: "20px 24px",
+                position: "relative"
+              }}>
                 <div style={{
                   position: "absolute",
-                  top: 0, left: "10%", right: "10%",
+                  top: 0, left: 0, right: 0,
                   height: 1,
-                  background: i % 2 === 0 ? "linear-gradient(90deg, transparent, var(--primary), transparent)" : "linear-gradient(90deg, transparent, var(--purple), transparent)",
-                  opacity: 0.6
+                  background: `linear-gradient(90deg, transparent, ${s.color}, transparent)`,
+                  opacity: 0.8
                 }} />
-                <div style={{ fontSize: 23, fontWeight: 800, letterSpacing: -0.5, color: "var(--text-primary)", fontFamily: "'JetBrains Mono', monospace", lineHeight: 1, textShadow: theme === "dark" ? "0 0 12px rgba(0,212,255,0.12)" : "none" }}>{s.value}</div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 8, fontSize: 11, color: "var(--text-secondary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{s.icon}<span>{s.label}</span></div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 6 }}>
+                  <span style={{ fontSize: 10, color: "var(--text-secondary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{s.label}</span>
+                  <span style={{ color: s.color, opacity: 0.8 }}>{s.icon}</span>
+                </div>
+                <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: -0.8, color: "var(--text-primary)", fontFamily: "'JetBrains Mono', monospace", lineHeight: 1 }}>{s.value}</div>
               </div>
             ))}
           </div>
