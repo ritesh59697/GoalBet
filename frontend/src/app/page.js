@@ -1595,7 +1595,7 @@ export default function Home() {
   const [tab, setTab] = useState("matches");
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState(null);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [footerModal, setFooterModal] = useState(null);
   
   // Notification history state
@@ -1606,7 +1606,7 @@ export default function Home() {
   const [showSwapWarning, setShowSwapWarning] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem("goalbet-theme") || "dark";
+    const saved = localStorage.getItem("goalbet-theme") || "light";
     setTheme(saved);
     document.documentElement.setAttribute("data-theme", saved);
     
@@ -1982,7 +1982,6 @@ export default function Home() {
               { label: "Whitepaper", key: "whitepaper" },
               { label: "Verification", key: "verification" },
               { label: "Odds API", key: "odds" },
-              { label: "Support", key: "support" },
               { label: "Privacy", key: "privacy" }
             ].map(l => (
               <button key={l.key} onClick={() => setFooterModal(l.key)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "var(--text-secondary)", textDecoration: "none", fontWeight: 500, transition: "color 0.2s" }}
