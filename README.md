@@ -4,7 +4,7 @@
 > Deployed on **OKX X Layer Mainnet** for the **Build-X Hackathon: X Cup 2026** (May 19–28).
 
 **Live DApp**: https://goal-bet-kappa.vercel.app/
-**Demo Video**: [Watch Demo on YouTube](https://youtu.be/OY1j5fXqVJY)
+**Demo Video**: [Watch Demo on YouTube](https://youtu.be/0Y1j5FxqVJY)
 **Developer**: [Ritesh59697](https://github.com/Ritesh59697)
 **Powered by**: OKX X Layer & Ethers.js
 
