@@ -5,7 +5,7 @@
 
 **Live DApp**: https://goal-bet-kappa.vercel.app/
 **Demo Video**: [Watch Demo on YouTube](https://youtu.be/0Y1j5FxqVJY)
-**Developer**: [Ritesh59697](https://github.com/Ritesh59697)
+**Developer**: [Ritesh5969](https://x.com/Ritesh5969)
 **Powered by**: OKX X Layer & Ethers.js
 
 ---
@@ -241,4 +241,4 @@ node scripts/test-rpc.js
 
 ---
 
-_Developed by [Ritesh59697](https://github.com/Ritesh59697) for the X Cup Hackathon 2026._
+_Developed by [Ritesh5969](https://x.com/Ritesh5969) for the X Cup Hackathon 2026._
