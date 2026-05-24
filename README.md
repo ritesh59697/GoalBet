@@ -14,9 +14,9 @@
 
 GoalBet is a decentralized, peer-to-peer prediction market built specifically for World Cup 2026. Deployed on OKX's high-speed, low-cost L2 network X Layer, it introduces two core innovations to the prediction market space:
 
-**Parimutuel Odds Pricing** — Unlike fixed-odds markets (e.g. Polymarket) that rely on a market maker or an orderbook, GoalBet consolidates all wagers into a single pool. Odds adjust dynamically in real-time based on pool sizes, with winners taking all minus a 2% protocol fee.
+**Parimutuel Odds Pricing** - Unlike fixed-odds markets (e.g. Polymarket) that rely on a market maker or an orderbook, GoalBet consolidates all wagers into a single pool. Odds adjust dynamically in real-time based on pool sizes, with winners taking all minus a 2% protocol fee.
 
-**Autonomous AI Agent Delegation** — Users can safely delegate betting authority to a built-in AI agent (`GoalBetAgent`). By defining a budget and authorizing the agent on-chain, users can step back while the agent calculates expected value (EV) and places mathematically optimized wagers using the Kelly Criterion.
+**Autonomous AI Agent Delegation** - Users can safely delegate betting authority to a built-in AI agent (`GoalBetAgent`). By defining a budget and authorizing the agent on-chain, users can step back while the agent calculates expected value (EV) and places mathematically optimized wagers using the Kelly Criterion.
 
 ---
 
