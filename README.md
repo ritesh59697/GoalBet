@@ -20,6 +20,13 @@ GoalBet is a decentralized, peer-to-peer prediction market built specifically fo
 
 ---
 
+## Key Technical Notes
+
+- **Match Data**: All match data is stored and managed directly on the X Layer smart contract for full on-chain transparency and decentralization.
+- **Leaderboard**: Currently shows mock/seed data for demonstration purposes. Real data is pulled from on-chain activity on X Layer mainnet.
+
+___
+
 ## Architecture
 
 The repository is organized into a Hardhat-based smart contract environment and a Next.js frontend with an embedded autonomous agent.
