@@ -39,9 +39,10 @@ export class GoalBetAgent {
   async analyzeMatch(matchIndex, profile) {
     try {
       const matchData = await this.marketContract.getMatch(matchIndex);
-      const { homeTeam, awayTeam, status } = matchData;
+      const { homeTeam, awayTeam, kickoffTime, status } = matchData;
 
       if (status !== 0n) return null; // Only analyze OPEN markets
+      if (Math.floor(Date.now() / 1000) >= Number(kickoffTime)) return null; // Skip if kickoff has passed
 
       const historicalData = this.getHistoricalData(homeTeam, awayTeam);
       const [contractHomeOdds, contractDrawOdds, contractAwayOdds] =

@@ -253,7 +253,7 @@ function MatchCard({ match, onBet }) {
             <button
               key={opt.o}
               className={`odds-btn ${opt.cls} ${statusClass}`}
-              disabled={match.status !== 0}
+              disabled={match.status !== 0 || match.kickoffTime <= Date.now()}
               onClick={() => onBet(match, opt.o)}
             >
               <span className="odds-label">{opt.label}</span>
