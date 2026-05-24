@@ -651,10 +651,13 @@ function InfoModal({ type, onClose, theme }) {
             All transaction logic, wagers, and agent executions are executed transparently on-chain. You can verify the smart contracts directly:
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
-            <div style={{ background: "rgba(0,0,0,0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>Prediction Market Contract</span>
+            <div style={{ background: "rgba(0,0,0,0.04)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 6px var(--primary)" }} />
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>Prediction Market Contract</span>
+              </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 500 }}>
                   {CONTRACTS.PREDICTION_MARKET || "0x12114397DCD0A58E10ff4eeb1d55c58558849dC7"}
                 </span>
                 {CONTRACTS.PREDICTION_MARKET && (
@@ -664,10 +667,13 @@ function InfoModal({ type, onClose, theme }) {
                 )}
               </div>
             </div>
-            <div style={{ background: "rgba(0,0,0,0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>Bet Receipt NFT Contract</span>
+            <div style={{ background: "rgba(0,0,0,0.04)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 6px var(--primary)" }} />
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>Bet Receipt NFT Contract</span>
+              </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 500 }}>
                   {CONTRACTS.BET_RECEIPT_NFT || "0x6afb09487F7b3C5826976fFE1f3b851bD7aec75D"}
                 </span>
                 {CONTRACTS.BET_RECEIPT_NFT && (
@@ -677,10 +683,13 @@ function InfoModal({ type, onClose, theme }) {
                 )}
               </div>
             </div>
-            <div style={{ background: "rgba(0,0,0,0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
-              <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>USDT Token Contract</span>
+            <div style={{ background: "rgba(0,0,0,0.04)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--purple)", boxShadow: "0 0 6px var(--purple)" }} />
+                <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>USDT Token Contract</span>
+              </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--purple)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 500 }}>
                   {CONTRACTS.USDT || "0x1E4a5963aBFD975d8c9021ce480b42188849D41d"}
                 </span>
                 {CONTRACTS.USDT && (
