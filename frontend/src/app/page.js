@@ -665,6 +665,19 @@ function InfoModal({ type, onClose, theme }) {
               </div>
             </div>
             <div style={{ background: "rgba(0,0,0,0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>Bet Receipt NFT Contract</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {CONTRACTS.BET_RECEIPT_NFT || "0x6afb09487F7b3C5826976fFE1f3b851bD7aec75D"}
+                </span>
+                {CONTRACTS.BET_RECEIPT_NFT && (
+                  <a href={`${ACTIVE_NETWORK.explorerUrl}/address/${CONTRACTS.BET_RECEIPT_NFT}`} target="_blank" rel="noreferrer" style={{ color: "var(--text-secondary)", display: "flex", alignItems: "center" }}>
+                    <ExternalLink size={14} />
+                  </a>
+                )}
+              </div>
+            </div>
+            <div style={{ background: "rgba(0,0,0,0.08)", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 4 }}>
               <span style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>USDT Token Contract</span>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                 <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: "var(--purple)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
