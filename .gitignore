@@ -50,5 +50,3 @@ yarn-error.log*
 
 # vercel
 .vercel
-AGENTS.md
-CLAUDE.md
