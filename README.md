@@ -3,10 +3,14 @@
 > **Autonomous AI Agent Delegation** · **Dynamic Parimutuel Pooling** · **100% On-Chain SVG NFT Receipts**
 > Deployed on **OKX X Layer Mainnet** for the **Build-X Hackathon: X Cup 2026** (May 19–28).
 
-**Live DApp**: https://goal-bet-kappa.vercel.app/
-**Demo Video**: [Watch Demo on YouTube](https://youtu.be/0Y1j5FxqVJY)
-**Developer**: [Ritesh5969](https://x.com/Ritesh5969)
-**Powered by**: OKX X Layer & Ethers.js
+## Quick Demo
+
+| | |
+|---|---|
+| **Live DApp** | [goal-bet-kappa.vercel.app](https://goal-bet-kappa.vercel.app/) |
+| **Demo Video** | [Watch on YouTube](https://youtu.be/0Y1j5FxqVJY) |
+| **Developer** | [@Ritesh5969](https://x.com/Ritesh5969) |
+| **Powered by** | OKX X Layer & Ethers.js |
 
 ---
 
