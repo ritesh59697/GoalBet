@@ -243,12 +243,12 @@ node scripts/test-rpc.js
 
 ## Hackathon Submission Checklist
 
-- [x] Smart contracts verified on OKLink
-- [x] 2% protocol fee escrowed; 98% distributed directly to winning pools
-- [x] AI agent with Kelly Criterion risk-sizing
-- [x] On-chain ERC-721 SVG NFT receipt generator
-- [x] Responsive UI with light and dark glassmorphic themes
-- [x] Resilient multi-RPC fallback integration
+- [x] ✅ **Smart contracts verified on OKLink**
+- [x] ✅ **2% protocol fee escrowed; 98% distributed directly to winning pools**
+- [x] ✅ **AI agent with Kelly Criterion risk-sizing**
+- [x] ✅ **On-chain ERC-721 SVG NFT receipt generator**
+- [x] ✅ **Responsive UI with light and dark glassmorphic themes**
+- [x] ✅ **Resilient multi-RPC fallback integration**
 
 ---
 
