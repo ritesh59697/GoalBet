@@ -252,4 +252,14 @@ node scripts/test-rpc.js
 
 ---
 
+## Future Improvements
+
+- **Trustless Oracles (Decentralized Settlement)** — Integrate oracle networks (e.g. Chainlink, API3) to dynamically query real-world sports APIs, automating match creation and settlements.
+- **Dynamic Bet Receipt NFTs** — Upgrade the on-chain SVG templates to dynamically change visual states (e.g. Pending, Live, Won, Lost) based on the match status.
+- **Fully Automated Agent Runs** — Schedule automated execution cycles via Chainlink Automation or Gelato Network to run the agent cycle at regular intervals (e.g. every 6 hours).
+- **DEX Smart Swaps** — Allow users to place bets with any X Layer asset (like OKB or USDC) by integrating a DEX router to swap them to USDT during transaction execution.
+- **Copy-Trading Pools** — Build a copy-trading index allowing users to stake capital into pools managed by top-performing AI Betting Agents.
+
+---
+
 _Developed by [Ritesh5969](https://x.com/Ritesh5969) for the X Cup Hackathon 2026._
