@@ -824,6 +824,25 @@ function MatchesTab({ matches = [], loading, onBet }) {
   const filtered = matches.filter(m =>
     !search || m.homeTeam.toLowerCase().includes(search.toLowerCase()) || m.awayTeam.toLowerCase().includes(search.toLowerCase())
   );
+
+  const sorted = [...filtered].sort((a, b) => {
+    // Upcoming/Active matches: status === 0 && kickoffTime > Date.now()
+    const aUpcoming = a.status === 0 && a.kickoffTime > Date.now();
+    const bUpcoming = b.status === 0 && b.kickoffTime > Date.now();
+    if (aUpcoming && !bUpcoming) return -1;
+    if (!aUpcoming && bUpcoming) return 1;
+    if (aUpcoming && bUpcoming) return a.kickoffTime - b.kickoffTime; // Ascending: soonest matches first
+
+    // Live matches: status === 0 && kickoffTime <= Date.now()
+    const aLive = a.status === 0 && a.kickoffTime <= Date.now();
+    const bLive = b.status === 0 && b.kickoffTime <= Date.now();
+    if (aLive && !bLive) return -1;
+    if (!aLive && bLive) return 1;
+
+    // Others (Locked, Resolved, Cancelled): descending kickoff time (most recent first)
+    return b.kickoffTime - a.kickoffTime;
+  });
+
   return (
     <div>
       {/* Controls */}
@@ -876,7 +895,7 @@ function MatchesTab({ matches = [], loading, onBet }) {
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-          {filtered.map(m => <MatchCard key={m.index} match={m} onBet={onBet} />)}
+          {sorted.map(m => <MatchCard key={m.index} match={m} onBet={onBet} />)}
         </div>
       )}
     </div>
@@ -1538,10 +1557,18 @@ function AgentTab({ address, signer, matches, usdtBalance, refetchUsdt, onNotif,
 
 // ─── Portfolio Tab ────────────────────────────────────────────────────────────
 function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
-  const { bets, loading, totalPnl, totalBetAmount, claimableBets, refetch: refetchBets } = useUserBets(address);
+  const { bets, loading, totalPnl, totalBetAmount, pendingBets, claimableBets, settledBets, refetch: refetchBets } = useUserBets(address);
   const { claimWinnings, status: claimStatus } = useBetting(signer);
+  const [activeSubTab, setActiveSubTab] = useState("all");
 
   const claimable = claimableBets.reduce((acc, b) => acc + b.potentialPayout, 0);
+
+  const filteredBets = (() => {
+    if (activeSubTab === "active") return pendingBets || [];
+    if (activeSubTab === "claimable") return claimableBets || [];
+    if (activeSubTab === "history") return (settledBets || []).filter(b => !b.canClaim);
+    return bets || [];
+  })();
 
   if (!address) {
     return (
@@ -1596,9 +1623,74 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
           ))}
         </div>
 
-        <h2 className="font-serif" style={{ fontSize: 22, fontWeight: 400, letterSpacing: "-0.01em", marginBottom: 18, display: "flex", alignItems: "center", gap: 10 }}>
-          <Wallet size={18} style={{ color: "var(--primary)" }} /> My Bets
-        </h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 16 }}>
+          <h2 className="font-serif" style={{ fontSize: 22, fontWeight: 400, letterSpacing: "-0.01em", margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
+            <Wallet size={18} style={{ color: "var(--primary)" }} /> My Bets
+          </h2>
+
+          {/* Sub-tab pill selectors */}
+          <div style={{
+            display: "flex",
+            gap: 4,
+            background: "rgba(255, 255, 255, 0.03)",
+            border: "1px solid var(--border)",
+            padding: 3,
+            borderRadius: 10,
+          }}>
+            {[
+              { id: "all", label: "All", count: (bets || []).length },
+              { id: "active", label: "Active & Live", count: (pendingBets || []).length },
+              { id: "claimable", label: "Claimable", count: (claimableBets || []).length, highlight: (claimableBets || []).length > 0 },
+              { id: "history", label: "History", count: (settledBets || []).filter(b => !b.canClaim).length }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSubTab(tab.id)}
+                className="font-sans"
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: 7,
+                  fontSize: 12,
+                  fontWeight: activeSubTab === tab.id ? 700 : 500,
+                  color: activeSubTab === tab.id 
+                    ? "var(--text-primary)" 
+                    : tab.highlight 
+                      ? "var(--gold)" 
+                      : "var(--text-secondary)",
+                  background: activeSubTab === tab.id 
+                    ? "rgba(255, 255, 255, 0.08)" 
+                    : "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  transition: "all 0.15s ease",
+                }}
+              >
+                {tab.label}
+                <span style={{
+                  fontSize: 10,
+                  padding: "1px 5px",
+                  borderRadius: 99,
+                  background: activeSubTab === tab.id 
+                    ? "var(--primary)" 
+                    : tab.highlight 
+                      ? "rgba(212, 175, 55, 0.15)" 
+                      : "rgba(255, 255, 255, 0.05)",
+                  color: activeSubTab === tab.id 
+                    ? "#000" 
+                    : tab.highlight 
+                      ? "var(--gold)" 
+                      : "var(--text-muted)",
+                  fontWeight: 700
+                }}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {loading ? (
@@ -1606,70 +1698,161 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
               <RefreshCw size={18} className="animate-spin" />
               <span style={{ fontSize: 12, fontWeight: 500 }}>Fetching bets...</span>
             </div>
-          ) : bets.length === 0 ? (
+          ) : filteredBets.length === 0 ? (
             <div className="card" style={{ padding: "48px 20px", textAlign: "center", color: "var(--text-muted)", display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
               <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--primary-alpha-bg)", border: "1px solid var(--primary-alpha-border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <CircleDot size={24} style={{ opacity: 0.6, color: "var(--primary)" }} />
               </div>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", marginBottom: 6 }}>No bets placed yet</div>
-                <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>Pick a match and make your first prediction to earn USDT.</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", marginBottom: 6 }}>
+                  {activeSubTab === "active" && "No active or live bets"}
+                  {activeSubTab === "claimable" && "No rewards to claim"}
+                  {activeSubTab === "history" && "No settled history"}
+                  {activeSubTab === "all" && "No bets placed yet"}
+                </div>
+                <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+                  {activeSubTab === "active" && "Your active/live prediction slips will appear here."}
+                  {activeSubTab === "claimable" && "When match predictions end in your favor, claim your USDT wins here!"}
+                  {activeSubTab === "history" && "Settled, lost, and fully claimed tickets are listed here."}
+                  {activeSubTab === "all" && "Pick a match and make your first prediction to earn USDT."}
+                </div>
               </div>
-              <a href="#" onClick={e => { e.preventDefault(); document.querySelector('[data-tab="matches"]')?.click(); }} style={{ textDecoration: "none" }}>
-                <button className="btn-primary" style={{ borderRadius: 10, marginTop: 4 }}>
-                  <BarChart3 size={14} /> Browse Markets
-                </button>
-              </a>
+              {activeSubTab === "all" && (
+                <a href="#" onClick={e => { e.preventDefault(); document.querySelector('[data-tab="matches"]')?.click(); }} style={{ textDecoration: "none" }}>
+                  <button className="btn-primary" style={{ borderRadius: 10, marginTop: 4 }}>
+                    <BarChart3 size={14} /> Browse Markets
+                  </button>
+                </a>
+              )}
             </div>
           ) : (
-            bets.map(bet => {
+            filteredBets.map(bet => {
               const estMultiplier = bet.amount > 0 ? (bet.potentialPayout / bet.amount).toFixed(2) : "0.00";
-              const borderLeftStyle = bet.isWinner
-                ? "4px solid #00ff88"
-                : bet.matchStatus === 0
-                  ? "4px solid #00d4ff"
-                  : "4px solid rgba(255, 255, 255, 0.05)";
-              const boxShadowStyle = bet.isWinner
-                ? "0 16px 40px rgba(0, 0, 0, 0.75), inset 4px 0 10px rgba(0, 255, 136, 0.08)"
-                : bet.matchStatus === 0
-                  ? "0 16px 40px rgba(0, 0, 0, 0.75), inset 4px 0 10px rgba(0, 212, 255, 0.08)"
-                  : "0 16px 40px rgba(0, 0, 0, 0.75)";
+              
+              // Determine card state visuals
+              let cardBorderLeft = "4px solid rgba(255, 255, 255, 0.05)";
+              let cardBoxShadow = "0 16px 40px rgba(0, 0, 0, 0.75)";
+              let statusBadge = null;
+              let payoutColor = "var(--text-primary)";
+              let payoutLabel = "Est. Payout";
+              let isClaimed = bet.claimed;
+              let isWinner = bet.isWinner;
+              let isLost = bet.matchStatus === 2 && !bet.isWinner;
+
+              if (bet.canClaim) {
+                // Claimable / Won but unclaimed
+                cardBorderLeft = "4px solid var(--success-text)"; // Neon/emerald green
+                cardBoxShadow = "0 16px 40px rgba(0, 0, 0, 0.75), inset 4px 0 10px var(--success-bg)";
+                payoutColor = "var(--success-text)";
+                payoutLabel = "Winnings";
+                statusBadge = (
+                  <span className="badge" style={{ gap: 5, padding: "4px 10px", background: "var(--success-bg)", border: "1px solid var(--success-border)", color: "var(--success-text)" }}>
+                    <CheckCircle2 size={10} /> Won · Ready to Claim
+                  </span>
+                );
+              } else if (isClaimed) {
+                // Won and Claimed
+                cardBorderLeft = "4px solid var(--gold)";
+                cardBoxShadow = "0 16px 40px rgba(0, 0, 0, 0.75), inset 4px 0 10px rgba(212, 175, 55, 0.04)";
+                payoutColor = "var(--gold)";
+                payoutLabel = "Claimed Winnings";
+                statusBadge = (
+                  <span className="badge" style={{ gap: 5, padding: "4px 10px", background: "rgba(212, 175, 55, 0.08)", border: "1px solid rgba(212, 175, 55, 0.2)", color: "var(--gold)" }}>
+                    <Unlock size={10} /> Claimed
+                  </span>
+                );
+              } else if (isLost) {
+                // Lost
+                cardBorderLeft = "4px solid rgba(255, 255, 255, 0.05)";
+                payoutColor = "var(--text-muted)";
+                payoutLabel = "Potential Payout";
+                statusBadge = (
+                  <span className="badge" style={{ gap: 5, padding: "4px 10px", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border)", color: "var(--text-muted)" }}>
+                    <AlertCircle size={10} style={{ opacity: 0.5 }} /> Settled (Lost)
+                  </span>
+                );
+              } else if (bet.matchStatus === 0) {
+                if (bet.kickoffTime > Date.now()) {
+                  // Upcoming / Open
+                  cardBorderLeft = "4px solid #00d4ff"; // Cyan
+                  cardBoxShadow = "0 16px 40px rgba(0, 0, 0, 0.75), inset 4px 0 10px rgba(0, 212, 255, 0.08)";
+                  statusBadge = (
+                    <span className="badge" style={{ gap: 5, padding: "4px 10px", background: "rgba(0, 212, 255, 0.08)", border: "1px solid rgba(0, 212, 255, 0.2)", color: "#00d4ff" }}>
+                      <Clock size={10} /> Upcoming
+                    </span>
+                  );
+                } else {
+                  // Live Now
+                  cardBorderLeft = "4px solid #ff4757"; // Pulsing red
+                  cardBoxShadow = "0 16px 40px rgba(0, 0, 0, 0.75), inset 4px 0 10px rgba(255, 71, 87, 0.08)";
+                  statusBadge = (
+                    <span className="badge badge-live" style={{ gap: 5, padding: "4px 10px" }}>
+                      <span className="pulse-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "#ff4757", boxShadow: "0 0 8px #ff4757", animation: "pulse-glow 2s infinite" }} /> Live Now
+                    </span>
+                  );
+                }
+              } else if (bet.matchStatus === 1) {
+                // Locked
+                cardBorderLeft = "4px solid var(--border)";
+                statusBadge = (
+                  <span className="badge" style={{ gap: 5, padding: "4px 10px", background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
+                    <Lock size={10} /> Locked · Grading
+                  </span>
+                );
+              } else if (bet.matchStatus === 3) {
+                // Cancelled
+                cardBorderLeft = "4px solid rgba(255, 255, 255, 0.1)";
+                payoutColor = "var(--text-primary)";
+                payoutLabel = "Refundable";
+                statusBadge = (
+                  <span className="badge" style={{ gap: 5, padding: "4px 10px", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "var(--text-secondary)" }}>
+                    <AlertCircle size={10} /> Cancelled
+                  </span>
+                );
+              }
+
               return (
-                <div key={bet.betId} className="card" style={{ padding: "16px 20px", borderLeft: borderLeftStyle, boxShadow: boxShadowStyle }}>
+                <div key={bet.betId} className="card" style={{ padding: "16px 20px", borderLeft: cardBorderLeft, boxShadow: cardBoxShadow }}>
                   <div className="font-sans" style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-                    {/* Teams */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      {TEAM_IMAGES[bet.homeTeam] ? <img src={TEAM_IMAGES[bet.homeTeam]} alt="" style={{ width: 28, height: 28, borderRadius: 4, objectFit: "cover" }} /> : <span style={{ fontSize: 20 }}>{TEAM_FLAGS[bet.homeTeam] || "🏴"}</span>}
-                      <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 700 }}>vs</span>
-                      {TEAM_IMAGES[bet.awayTeam] ? <img src={TEAM_IMAGES[bet.awayTeam]} alt="" style={{ width: 28, height: 28, borderRadius: 4, objectFit: "cover" }} /> : <span style={{ fontSize: 20 }}>{TEAM_FLAGS[bet.awayTeam] || "🏴"}</span>}
+                    
+                    {/* Teams Avatar Group */}
+                    <div style={{ display: "flex", alignItems: "center", position: "relative", width: 44, height: 26, flexShrink: 0 }}>
+                      <div style={{ position: "absolute", left: 0, zIndex: 2 }}>
+                        {TEAM_IMAGES[bet.homeTeam] ? (
+                          <img src={TEAM_IMAGES[bet.homeTeam]} alt="" style={{ width: 26, height: 26, borderRadius: "50%", border: "2px solid var(--bg-card)", objectFit: "cover" }} />
+                        ) : (
+                          <span style={{ fontSize: 18 }}>{TEAM_FLAGS[bet.homeTeam] || "🏴"}</span>
+                        )}
+                      </div>
+                      <div style={{ position: "absolute", left: 16, zIndex: 1 }}>
+                        {TEAM_IMAGES[bet.awayTeam] ? (
+                          <img src={TEAM_IMAGES[bet.awayTeam]} alt="" style={{ width: 26, height: 26, borderRadius: "50%", border: "2px solid var(--bg-card)", objectFit: "cover" }} />
+                        ) : (
+                          <span style={{ fontSize: 18 }}>{TEAM_FLAGS[bet.awayTeam] || "🏴"}</span>
+                        )}
+                      </div>
                     </div>
 
                     {/* Info */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 3 }}>{bet.homeTeam} <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>vs</span> {bet.awayTeam}</div>
+                    <div style={{ flex: 1, minWidth: 200 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span>{bet.homeTeam} vs {bet.awayTeam}</span>
+                        {statusBadge}
+                      </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                        <span style={{ fontSize: 12, color: "var(--primary)" }}>{bet.outcomeName}</span>
-                        <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace" }}>@ {estMultiplier}x</span>
-                        {bet.isAgentBet && <span className="badge badge-agent"><Bot size={9} />Agent</span>}
-                        {bet.kickoffTime && (
-                          <>
-                            <div style={{ width: 1, height: 12, background: "var(--border)", margin: "0 2px" }} />
-                            <span style={{ fontSize: 11, color: "var(--text-muted)", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                              <Clock size={10} />
-                              {bet.matchStatus === 0 ? (
-                                bet.kickoffTime > Date.now() ? (
-                                  `Starts in ${timeUntil(bet.kickoffTime)}`
-                                ) : (
-                                  "In Progress (Live Now)"
-                                )
-                              ) : bet.matchStatus === 1 ? (
-                                "Locked (Announcing soon)"
-                              ) : (
-                                "Ended"
-                              )}
-                            </span>
-                          </>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-secondary)" }}>Prediction:</span>
+                        <span className="text-gradient-primary-purple" style={{ fontSize: 12, fontWeight: 800 }}>
+                          {bet.outcomeName}
+                        </span>
+                        <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>@ {estMultiplier}x</span>
+                        {bet.isAgentBet && (
+                          <span className="badge" style={{ gap: 3, padding: "2px 6px", background: "var(--purple-alpha-bg)", border: "1px solid var(--purple-alpha-border)", color: "var(--purple)", fontSize: 9.5 }}>
+                            <Bot size={9} /> Agent
+                          </span>
                         )}
+                        
+                        <div style={{ width: 1, height: 10, background: "var(--border)", margin: "0 4px" }} />
+                        
                         {bet.txHash && (
                           <a
                             href={`${ACTIVE_NETWORK.explorerUrl}/tx/${bet.txHash}`}
@@ -1679,50 +1862,53 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: 3,
-                              fontSize: 11,
+                              fontSize: 10.5,
                               color: "var(--text-secondary)",
-                              textDecoration: "underline",
-                              marginLeft: 6
+                              textDecoration: "none",
                             }}
                             onMouseEnter={e => e.currentTarget.style.color = "var(--primary)"}
                             onMouseLeave={e => e.currentTarget.style.color = "var(--text-secondary)"}
                           >
-                            Verify <ExternalLink size={10} />
+                            TX <ExternalLink size={9} />
                           </a>
                         )}
                         {bet.claimed && bet.claimTxHash && (
-                          <a
-                            href={`${ACTIVE_NETWORK.explorerUrl}/tx/${bet.claimTxHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 3,
-                              fontSize: 11,
-                              color: "var(--gold)",
-                              textDecoration: "underline",
-                              marginLeft: 6
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.color = "var(--primary)"}
-                            onMouseLeave={e => e.currentTarget.style.color = "var(--gold)"}
-                          >
-                            Verify Claim <ExternalLink size={10} />
-                          </a>
+                          <>
+                            <div style={{ width: 1, height: 10, background: "var(--border)", margin: "0 4px" }} />
+                            <a
+                              href={`${ACTIVE_NETWORK.explorerUrl}/tx/${bet.claimTxHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 3,
+                                fontSize: 10.5,
+                                color: "var(--gold)",
+                                textDecoration: "none",
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.color = "var(--primary)"}
+                              onMouseLeave={e => e.currentTarget.style.color = "var(--gold)"}
+                            >
+                              Claim TX <ExternalLink size={9} />
+                            </a>
+                          </>
                         )}
                       </div>
                     </div>
 
                     {/* Amount */}
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 2 }}>Wager</div>
-                      <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace" }}>${fmt(bet.amount)}</div>
+                    <div style={{ textAlign: "right", paddingRight: 8, minWidth: 60 }}>
+                      <div style={{ fontSize: 9.5, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 2 }}>Wager</div>
+                      <div style={{ fontSize: 14.5, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: "var(--text-primary)" }}>${fmt(bet.amount)}</div>
                     </div>
 
+                    <div style={{ width: 1, height: 28, background: "var(--border)" }} />
+
                     {/* Payout */}
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 2 }}>{bet.canClaim ? "Payout" : "Est. Payout"}</div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: bet.isWinner ? "var(--green)" : "var(--text-primary)", fontFamily: "'JetBrains Mono', monospace" }}>${fmt(bet.potentialPayout)}</div>
+                    <div style={{ textAlign: "right", paddingLeft: 8, paddingRight: 12, minWidth: 80 }}>
+                      <div style={{ fontSize: 9.5, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 2 }}>{payoutLabel}</div>
+                      <div style={{ fontSize: 14.5, fontWeight: 800, color: payoutColor, fontFamily: "'JetBrains Mono', monospace" }}>${fmt(bet.potentialPayout)}</div>
                     </div>
 
                     {/* Action */}
@@ -1758,14 +1944,13 @@ function PortfolioTab({ address, signer, refetchUsdt, onNotif, addNotif }) {
                             onNotif("Claim failed", "error");
                           }
                         }}
-                        style={{ gap: 6 }}
+                        style={{ gap: 6, padding: "8px 16px", height: 36, fontSize: 12, borderRadius: 8 }}
                         disabled={claimStatus === "claiming"}
                       >
-                        {claimStatus === "claiming" ? <RefreshCw size={13} className="animate-spin" /> : <ArrowUpRight size={13} />} Claim
+                        {claimStatus === "claiming" ? <RefreshCw size={12} className="animate-spin" /> : <ArrowUpRight size={12} />} Claim
                       </button>
-                    ) : bet.matchStatus === 0 ? (
-                      <span className="badge badge-live"><CircleDot size={9} /> Live</span>
                     ) : null}
+
                   </div>
                 </div>
               );
