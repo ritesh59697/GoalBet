@@ -511,9 +511,9 @@ body::after {
 }
 
 .badge-done {
-  background: rgba(0, 255, 136, 0.08);
-  color: #00ff88;
-  border: 1px solid rgba(0, 255, 136, 0.2);
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-border);
 }
 
 .badge-agent {
